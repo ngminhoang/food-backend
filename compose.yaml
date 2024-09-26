@@ -2,14 +2,13 @@ version: "3.3"
 
 services:
   food-db:
-    image: postgres:13
+    image: postgres:15
     restart: always
     environment:
-      POSTGRES_USERNAME: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
       POSTGRES_DB: food-db
     volumes:
       - ./db_data:/var/lib/postgresql/data
     ports:
-      - 5437:5432
-
+      - "5437:5432"  # Host:Container

@@ -27,7 +27,7 @@ public class Food {
     private double grams;
     private double calories;
     private double protein;
-    private double carbohydrates;
+    private double carb;
     private double fat;
     private double satFat;
     private double fiber;
