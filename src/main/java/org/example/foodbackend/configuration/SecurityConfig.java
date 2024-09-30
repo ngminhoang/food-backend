@@ -31,7 +31,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .csrf(x -> x.disable()).authorizeRequests()
                 .requestMatchers("/api/user/**").hasRole("USER")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/login", "/api/register")
+                .requestMatchers("/api/login", "/api/register","/api/public/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

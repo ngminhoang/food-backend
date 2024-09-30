@@ -30,7 +30,6 @@ public class Account implements UserDetails {
     private String password;
     @Column(name="name",nullable = false)
     private String name;
-
     @Column(name="role")
     private Erole role;
 
