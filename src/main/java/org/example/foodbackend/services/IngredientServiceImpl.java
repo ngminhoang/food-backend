@@ -17,4 +17,9 @@ public class IngredientServiceImpl implements IngredientService {
     public ResponseEntity<List<Ingredient>> getAllIngredients() {
         return ResponseEntity.ok( ingredientRepository.findAll());
     }
+
+    @Override
+    public ResponseEntity<List<Ingredient>> createIngredients(List<Ingredient> ingredients){
+        return ResponseEntity.ok( ingredientRepository.saveAll(ingredients));
+    }
 }

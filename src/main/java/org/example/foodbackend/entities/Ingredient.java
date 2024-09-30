@@ -17,8 +17,9 @@ public class Ingredient {
     Double nuGrams;
     Double nuCalories;
     Double nuProteins;
-    Double nuCards;
+    Double nuCarbs;
     Double nuFibers;
     Double nuFats;
     Double nuSatFats;
+    Integer nuPrice;
 }
