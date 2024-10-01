@@ -33,6 +33,12 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/login", "/api/register","/api/public/**")
                 .permitAll()
+                .requestMatchers("/auth/login",
+                        "/auth/register",
+                        "/swagger",
+                        "/swagger-ui/**",
+                        "/api-docs/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
