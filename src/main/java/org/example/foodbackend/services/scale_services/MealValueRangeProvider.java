@@ -1,42 +1,13 @@
 package org.example.foodbackend.services.scale_services;
 
-import org.example.foodbackend.entities.Ingredient;
-import org.optaplanner.core.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
-import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 import java.util.Arrays;
 import java.util.List;
 
-@PlanningSolution
-public class MealPlan {
+public class MealValueRangeProvider {
 
-    private List<Ingredient> ingredientList;
-    private HardSoftScore score;
-
-    // List of ingredients to optimize
-    @PlanningEntityCollectionProperty
-    public List<Ingredient> getIngredientList() {
-        return ingredientList;
-    }
-
-    public void setIngredientList(List<Ingredient> ingredientList) {
-        this.ingredientList = ingredientList;
-    }
-
-    // The optimization score
-    @PlanningScore
-    public HardSoftScore getScore() {
-        return score;
-    }
-
-    public void setScore(HardSoftScore score) {
-        this.score = score;
-    }
-
-    // Define value ranges for planning variables in the solution class
+    // Define the value range for grams
     @ValueRangeProvider(id = "gramRange")
     public List<Double> provideGramRange() {
         return Arrays.asList(50.0, 100.0, 150.0, 200.0); // Adjust as necessary
@@ -77,3 +48,4 @@ public class MealPlan {
         return Arrays.asList(100, 200, 300, 400); // Adjust as necessary
     }
 }
+

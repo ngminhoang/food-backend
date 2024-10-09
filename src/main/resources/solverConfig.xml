@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver>
+    <!-- The solution class is your planning solution -->
+    <solutionClass>org.example.foodbackend.NutritionOptimizationSolution</solutionClass>
+
+    <!-- The planning entities are the parts of the solution that OptaPlanner needs to change to improve the solution -->
+    <entityClass>org.example.foodbackend.Food</entityClass>
+
+    <!-- Scoring logic -->
+    <scoreDirectorFactory>
+        <easyScoreCalculatorClass>org.example.foodbackend.NutritionScoreCalculator</easyScoreCalculatorClass>
+    </scoreDirectorFactory>
+
+    <termination>
+        <secondsSpentLimit>30</secondsSpentLimit>
+    </termination>
+
+    <!-- Specify the score type -->
+    <scoreCalculationType>HARD_SOFT</scoreCalculationType> <!-- Thêm dòng này -->
+</solver>
