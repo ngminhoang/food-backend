@@ -18,8 +18,8 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
                 carbsConstraint(constraintFactory),
                 fibersConstraint(constraintFactory),
                 fatsConstraint(constraintFactory),
-                saturatedFatsConstraint(constraintFactory),
-                minimizeCostConstraint(constraintFactory)
+                minimizeCostConstraint(constraintFactory),
+                portionConstraint(constraintFactory),
         };
     }
 
@@ -27,7 +27,7 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
     private Constraint proteinConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuProteins().intValue()))
-                .filter(totalProtein -> totalProtein < 50)
+                .filter(totalProtein -> totalProtein > 0)
                 .penalize("Protein requirement", HardSoftScore.ONE_HARD);
     }
 
@@ -35,15 +35,21 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
     private Constraint caloriesConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuCalories().intValue()))
-                .filter(totalCalo -> totalCalo < 2000)
+                .filter(totalCalo -> totalCalo > 0)
                 .penalize("Calories requirement", HardSoftScore.ONE_HARD);
+    }
+
+    private Constraint portionConstraint(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Ingredient.class)
+                .filter(ingredient -> ingredient.getPortion() > 0)
+                .penalize("Portion must be non-zero", HardSoftScore.ONE_HARD);
     }
 
     // Ràng buộc cho carbs
     private Constraint carbsConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuCarbs().intValue()))
-                .filter(totalCarbs -> totalCarbs < 150)
+                .filter(totalCarbs -> totalCarbs > 0)
                 .penalize("Carb requirement", HardSoftScore.ONE_HARD);
     }
 
@@ -51,7 +57,7 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
     private Constraint fibersConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuFibers().intValue()))
-                .filter(totalFibers -> totalFibers < 30)
+                .filter(totalFibers -> totalFibers > 0)
                 .penalize("Fiber requirement", HardSoftScore.ONE_HARD);
     }
 
@@ -59,7 +65,7 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
     private Constraint fatsConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuFats().intValue()))
-                .filter(totalFats -> totalFats < 70)
+                .filter(totalFats -> totalFats > 0)
                 .penalize("Fat requirement", HardSoftScore.ONE_HARD);
     }
 
@@ -67,13 +73,13 @@ public class NutritionConstraintProvider extends SolverConfig implements Constra
     private Constraint saturatedFatsConstraint(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Ingredient.class)
                 .groupBy(ConstraintCollectors.sum(ingredient -> ingredient.getNuSatFats().intValue()))
-                .filter(totalSatFats -> totalSatFats < 20)
+                .filter(totalSatFats -> totalSatFats > 0)
                 .penalize("Saturated Fat requirement", HardSoftScore.ONE_HARD);
     }
 
     // Ràng buộc để tối thiểu hóa chi phí
     private Constraint minimizeCostConstraint(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEach(Ingredient.class)
-                .penalize("Minimize cost", HardSoftScore.ONE_SOFT, ingredient -> ingredient.getNuPrice().intValue());
+        return constraintFactory.forEach(Ingredient.class).groupBy(ConstraintCollectors.sum(Ingredient::getNuPrice))
+                .penalize("Minimize cost", HardSoftScore.ONE_SOFT);
     }
 }

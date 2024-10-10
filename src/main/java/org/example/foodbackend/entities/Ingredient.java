@@ -21,7 +21,7 @@ public class Ingredient {
     String name;
 
     // Define value ranges for planning variables
-    @PlanningVariable(valueRangeProviderRefs = "gramRange")
+//    @PlanningVariable(valueRangeProviderRefs = "gramRange")
     Double nuGrams;
 
     @PlanningVariable(valueRangeProviderRefs = "calorieRange")
@@ -44,6 +44,9 @@ public class Ingredient {
 
     @PlanningVariable(valueRangeProviderRefs = "priceRange")
     Integer nuPrice;
+
+    @PlanningVariable(valueRangeProviderRefs = "portionRange") // Giả sử bạn đã định nghĩa range cho tỷ lệ
+    Double portion;
 
     public Ingredient(String name, Double nuGrams, Double nuCalories, Double nuProteins, Double nuCarbs, Double nuFibers, Double nuFats, Double nuSatFats, Integer nuPrice) {
         this.name = name;
