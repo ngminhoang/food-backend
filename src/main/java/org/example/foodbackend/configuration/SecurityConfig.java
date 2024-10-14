@@ -29,18 +29,19 @@ public class SecurityConfig implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(x -> x.disable()).authorizeRequests()
-                .requestMatchers("/api/user/**").hasRole("USER")
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/login", "/api/register","/api/public/**")
-                .permitAll()
-                .requestMatchers("/auth/login",
-                        "/auth/register",
-                        "/swagger",
-                        "/swagger-ui/**",
-                        "/api-docs/**")
-                .permitAll()
+//                .requestMatchers("/api/user/**").hasRole("USER")
+//                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                .requestMatchers("/api/login", "/api/register","/api/public/**")
+//                .permitAll()
+//                .requestMatchers("/auth/login",
+//                        "/auth/register",
+//                        "/swagger",
+//                        "/swagger-ui/**",
+//                        "/api-docs/**")
+//                .permitAll()
                 .anyRequest()
-                .authenticated()
+                .permitAll()
+//                .authenticated()
                 .and()
                 .authenticationProvider(authenticationManager)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

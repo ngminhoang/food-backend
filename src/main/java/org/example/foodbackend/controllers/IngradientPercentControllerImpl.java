@@ -2,23 +2,20 @@ package org.example.foodbackend.controllers;
 
 import org.example.foodbackend.controllers.base.BaseController;
 import org.example.foodbackend.entities.Ingradient;
+import org.example.foodbackend.entities.IngradientPercent;
 import org.example.foodbackend.entities.dto.IngradientResponseDTO;
+import org.example.foodbackend.services.IngradientPercentService;
 import org.example.foodbackend.services.IngredientService;
-import org.example.foodbackend.services.base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-@RestController
-public class IngredientControllerImpl extends BaseController<Ingradient, Long, IngredientService> implements IngredientController {
-    @Autowired
-    public IngredientControllerImpl(IngredientService service) {
-        super(service);
-    }
 
-    @Override
-    public ResponseEntity<List<IngradientResponseDTO>> getList() {
-        return null;
+@RestController
+public class IngradientPercentControllerImpl extends BaseController<IngradientPercent, Long, IngradientPercentService> implements IngradientPercentController {
+    @Autowired
+    public IngradientPercentControllerImpl(IngradientPercentService service) {
+        super(service);
     }
 }

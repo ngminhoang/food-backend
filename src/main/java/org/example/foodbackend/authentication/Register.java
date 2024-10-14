@@ -2,7 +2,7 @@ package org.example.foodbackend.authentication;
 
 import lombok.Builder;
 import lombok.Data;
-import org.example.foodbackend.entities.Erole;
+import org.example.foodbackend.entities.enums.Erole;
 
 @Builder
 @Data
