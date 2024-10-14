@@ -1,11 +1,9 @@
 package org.example.foodbackend.repositories;
 
-import org.example.foodbackend.entities.Ingredient;
+import org.example.foodbackend.entities.Ingradient;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 @Repository
-public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
+public interface IngredientRepository extends JpaRepository<Ingradient, Long> {
 }

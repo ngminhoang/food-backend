@@ -1,14 +1,14 @@
 package org.example.foodbackend.controllers;
 
-import org.example.foodbackend.entities.Ingredient;
+import org.example.foodbackend.entities.Ingradient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 public interface IngredientController {
-    ResponseEntity<List<Ingredient>> getAllIngredients();
+    ResponseEntity<List<Ingradient>> getAllIngredients();
 
     @PostMapping("/create")
-    ResponseEntity<List<Ingredient>> createIngredients(@RequestBody List<Ingredient> ingredients);
+    ResponseEntity<List<Ingradient>> createIngredients(@RequestBody List<Ingradient> ingradients);
 }
