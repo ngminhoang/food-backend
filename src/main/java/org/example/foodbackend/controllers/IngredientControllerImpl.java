@@ -1,6 +1,6 @@
 package org.example.foodbackend.controllers;
 
-import org.example.foodbackend.entities.Ingredient;
+import org.example.foodbackend.entities.Ingradient;
 import org.example.foodbackend.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +16,13 @@ public class IngredientControllerImpl implements IngredientController {
 
     @Override
     @GetMapping("/list")
-    public ResponseEntity<List<Ingredient>> getAllIngredients() {
+    public ResponseEntity<List<Ingradient>> getAllIngredients() {
         return ingredientRepository.getAllIngredients();
     }
 
     @PostMapping("/create")
     @Override
-    public ResponseEntity<List<Ingredient>> createIngredients(@RequestBody List<Ingredient> ingredients) {
-        return ingredientRepository.createIngredients(ingredients);
+    public ResponseEntity<List<Ingradient>> createIngredients(@RequestBody List<Ingradient> ingradients) {
+        return ingredientRepository.createIngredients(ingradients);
     }
 }
