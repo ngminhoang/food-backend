@@ -15,8 +15,8 @@ public class IngradientPercentResponseDTO {
 
     public IngradientPercentResponseDTO(IngradientPercent ingradientPercent) {
         this.id = ingradientPercent.getId();
-        this.percentage = ingradientPercent.getPercentage();
-        this.ingradientNames = ingradientPercent.getIngradients().stream()
+        this.percentage = ingradientPercent.getPercent();
+        this.ingradientNames = ingradientPercent.getIngredients().stream()
                 .map(ingradient -> ingradient.getName())
                 .collect(Collectors.toList());
     }

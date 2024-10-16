@@ -10,4 +10,5 @@ public interface BaseService<T, ID> {
     void deleteById(ID id);
     T findById(ID id);
     ResponseEntity<List<T>> findAll();
+    List<T> saveAll(List<T> entities);
 }

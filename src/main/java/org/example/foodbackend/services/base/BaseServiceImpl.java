@@ -43,4 +43,8 @@ public abstract class BaseServiceImpl<T, ID, R extends JpaRepository<T, ID>>{
             return ResponseEntity.noContent().build();
         }
     }
+
+    public List<T> saveAll(List<T> entities) {
+        return repository.saveAll(entities);
+    }
 }

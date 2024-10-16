@@ -18,7 +18,7 @@ public class IngradientResponseDTO {
     Double nuFibers;
     Double nuFats;
     Double nuSatFats;
-    Integer nuPrice;
+    Double nuPrice;
 
     public IngradientResponseDTO( Ingradient ingradient ) {
         this.id = ingradient.getId();

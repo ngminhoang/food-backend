@@ -1,10 +1,14 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.foodbackend.entities.Category;
+import org.example.foodbackend.entities.IngradientPercent;
 
 import java.util.List;
 
@@ -15,26 +19,35 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ingradient {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String name;
+    @Column(nullable = false)
+    private String name;
 
-    Double nuGrams;
-    Double nuCalories;
-    Double nuProteins;
-    Double nuCarbs;
-    Double nuFibers;
-    Double nuFats;
-    Double nuSatFats;
-    Integer nuPrice;
+    private Double nuGrams;
+    private Double nuCalories;
+    private Double nuProteins;
+    private Double nuCarbs;
+    private Double nuFibers;
+    private Double nuFats;
+    private Double nuSatFats;
+    private Double nuPrice;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    Category category;
+    @JsonIgnore
+    private Category category;  // This will include only the Category object without its ingredients
 
-    @ManyToMany(mappedBy = "ingradients")
-    List<IngradientPercent> ingradientPercents;
+    @ManyToMany
+    @JoinTable(
+            name = "ingredient_percent_mapping",
+            joinColumns = @JoinColumn(name = "ingredient_id"),
+            inverseJoinColumns = @JoinColumn(name = "percent_id")
+    )
+    @JsonIgnore
+    private List<IngradientPercent> ingredientPercents;  // This will be ignored in the JSON response
 
 }

@@ -19,7 +19,10 @@ public class ParameterResponseDTO {
     private List<Long> recipeIds;
 
     public ParameterResponseDTO(Parameter parameter) {
-        this.id = parameter.getId();
+        try{
+            this.id = parameter.getId();
+
+
         this.sumCalories = parameter.getSumCalories();
         this.sumProteins = parameter.getSumProteins();
         this.sumCarbs = parameter.getSumCarbs();
@@ -29,5 +32,7 @@ public class ParameterResponseDTO {
         this.recipeIds = parameter.getRecipes().stream()
                 .map(recipe -> recipe.getId())
                 .collect(Collectors.toList());
+        }catch (Exception e){
+        }
     }
 }

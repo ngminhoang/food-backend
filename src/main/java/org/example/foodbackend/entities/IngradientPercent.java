@@ -10,19 +10,25 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "ingradient_percent")
+@Table(name = "ingredient_percent")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class IngradientPercent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    // Represents the relationship between ingredients and percentages
+    private Double percent;
+
+    // Bi-directional Many-to-Many relationship with Ingredient
     @ManyToMany
-    List<Ingradient> ingradients;
+    @JoinTable(
+            name = "ingredient_percent_mapping",
+            joinColumns = @JoinColumn(name = "percent_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
+    )
+    private List<Ingradient> ingredients;
 
-    // Additional attributes like percentage can be added here
-    Double percentage;
 }

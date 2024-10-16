@@ -34,6 +34,12 @@ public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
         return ResponseEntity.ok(savedEntity);
     }
 
+    @PostMapping("/all")
+    public ResponseEntity<List<T>> createAll(@RequestBody List<T> entities) {
+        List<T> savedEnties = service.saveAll(entities);
+        return ResponseEntity.ok(savedEnties);
+    }
+
     @PutMapping
     public ResponseEntity<T> update(@RequestBody T entity) {
         T updatedEntity = service.update(entity);
