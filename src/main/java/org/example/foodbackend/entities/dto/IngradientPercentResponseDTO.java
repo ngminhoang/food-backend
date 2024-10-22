@@ -11,13 +11,11 @@ import java.util.stream.Collectors;
 public class IngradientPercentResponseDTO {
     private Long id;
     private Double percentage;
-    private List<String> ingradientNames;
+    private String ingradientNames;
 
     public IngradientPercentResponseDTO(IngradientPercent ingradientPercent) {
         this.id = ingradientPercent.getId();
         this.percentage = ingradientPercent.getPercent();
-        this.ingradientNames = ingradientPercent.getIngredients().stream()
-                .map(ingradient -> ingradient.getName())
-                .collect(Collectors.toList());
+        this.ingradientNames = ingradientPercent.getIngredient().getName();
     }
 }

@@ -22,11 +22,11 @@ public class ParameterServiceImpl  extends BaseServiceImpl<Parameter, Long, Para
     @Override
     public ResponseEntity<ParameterResponseDTO> findByProperties(Parameter parameter) {
 
-        Parameter result =  repository.findClosestMatch(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
-        if(result != null) {
-            return ResponseEntity.ok(new ParameterResponseDTO(result));
-        }
-        result = pythonAPI.caculate(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
+//        Parameter result =  repository.findClosestMatch(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
+//        if(result != null) {
+//            return ResponseEntity.ok(new ParameterResponseDTO(result));
+//        }
+        Parameter result = pythonAPI.calculate(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
         return ResponseEntity.ok(new ParameterResponseDTO(result));
     }
 }

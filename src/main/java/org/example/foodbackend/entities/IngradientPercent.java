@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.foodbackend.entities.dto.FlaskResponseDTO;
 
 import java.util.List;
 
@@ -22,13 +23,12 @@ public class IngradientPercent {
 
     private Double percent;
 
-    // Bi-directional Many-to-Many relationship with Ingredient
-    @ManyToMany
-    @JoinTable(
-            name = "ingredient_percent_mapping",
-            joinColumns = @JoinColumn(name = "percent_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingredient_id")
-    )
-    private List<Ingradient> ingredients;
+    @ManyToOne
+    @JoinColumn(name = "ingredient_id")
+    private Ingradient ingredient;  // This will hold the associated ingredient
 
+    public IngradientPercent(Double percent, Ingradient ingredient) {
+        this.percent = percent;
+        this.ingredient = ingredient;
+    }
 }

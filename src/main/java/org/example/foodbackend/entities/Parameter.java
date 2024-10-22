@@ -1,11 +1,14 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.dto.ParameterRequestDTO;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -27,8 +30,10 @@ public class Parameter {
     Double sumFats;
     Double sumSatFats;
 
-    @OneToMany(mappedBy = "parameter")
+    @OneToMany(mappedBy = "parameter",cascade = CascadeType.ALL, orphanRemoval = false)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     List<Recipe> recipes;
+
 
     public Parameter(ParameterRequestDTO parameterRequestDTO) {
         this.sumCalories = parameterRequestDTO.getSumCalories();
