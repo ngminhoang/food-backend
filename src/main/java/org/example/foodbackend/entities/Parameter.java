@@ -30,9 +30,9 @@ public class Parameter {
     Double sumFats;
     Double sumSatFats;
 
-    @OneToMany(mappedBy = "parameter",cascade = CascadeType.ALL, orphanRemoval = false)
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @OneToMany(mappedBy = "parameter", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Recipe> recipes;
+
 
 
     public Parameter(ParameterRequestDTO parameterRequestDTO) {

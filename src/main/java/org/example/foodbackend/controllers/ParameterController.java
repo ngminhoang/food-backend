@@ -16,4 +16,6 @@ import java.util.List;
 public interface ParameterController {
     @GetMapping("/filter")
     ResponseEntity<ParameterResponseDTO> getFilter(@RequestParam Double calories,@RequestParam Double proteins,@RequestParam Double carbs,@RequestParam Double fibers,@RequestParam Double fats,@RequestParam Double satFats);
+    @GetMapping("/filter-by-body")
+    ResponseEntity<ParameterResponseDTO> getFilterByBody(@RequestParam Double weight,@RequestParam Double height,@RequestParam Integer age,@RequestParam String gender,@RequestParam String activityLevel);
 }

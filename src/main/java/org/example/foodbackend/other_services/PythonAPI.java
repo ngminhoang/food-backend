@@ -2,12 +2,10 @@ package org.example.foodbackend.other_services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.foodbackend.entities.Ingradient;
 import org.example.foodbackend.entities.IngradientPercent;
 import org.example.foodbackend.entities.Parameter;
 import org.example.foodbackend.entities.Recipe;
 import org.example.foodbackend.entities.dto.FlaskResponseDTO;
-import org.example.foodbackend.repositories.IngradientPercentRepository;
 import org.example.foodbackend.repositories.IngredientRepository;
 import org.example.foodbackend.repositories.ParameterRepository;
 import org.example.foodbackend.repositories.RecipeRepository;
@@ -22,10 +20,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class PythonAPI {
+
+    HttpClient client = HttpClient.newHttpClient();
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private ParameterRepository parameterRepository;
@@ -35,38 +36,46 @@ public class PythonAPI {
 
     @Autowired
     private IngredientRepository ingredientRepository;
-//
-//    @Transactional
-//    public void addIngredientPercentToIngredient(Long ingredientId, FlaskResponseDTO responseDTO) {
-//        // Step 1: Retrieve the ingredient by ID
-//        Ingradient ingredient = ingredientRepository.findById(ingredientId)
-//                .orElseThrow(() -> new RuntimeException("Ingredient not found"));
-//
-//        // Step 2: Create a new IngradientPercent instance
-//        IngradientPercent ingredientPercent = new IngradientPercent();
-//        ingredientPercent.setPercent(responseDTO.getPercent());
-//
-//        // Step 3: Add the ingredient to the IngradientPercent's ingredients list
-//        ingredientPercent.setIngredients(List.of(ingredient));
-//
-//        // Step 4: Add the IngradientPercent to the ingredient's ingredientPercents list
-//        ingredient.getIngredientPercents().add(ingredientPercent);
-//
-//        // Step 5: Save both the IngradientPercent and the Ingradient
-//        ingredientPercentRepository.save(ingredientPercent);
-//        ingredientRepository.save(ingredient);
-//    }
-    // Base URL of your external Python API
-    private static final String API_URL = "http://localhost:5000/api/data?calo=%f&protein=%f&fat=%f&sat_fat=%f&fiber=%f&carb=%f";
 
-    // Method to call external API with individual parameters
+    private static final String API_URL_ROOT = "http://localhost:5000/api";
+    private static final String CALCULATE_API = "/data?calo=%f&protein=%f&fat=%f&sat_fat=%f&fiber=%f&carb=%f";
+    private static final String CALCULATE_BY_BODY_API = "/data?weight_kg=%f&height_cm=%f&age=%f&gender=%f&activity_level=%f&moderately_active=%f";
+
+    public PythonAPI(){
+        client = HttpClient.newHttpClient();
+        objectMapper = new ObjectMapper();
+
+    }
+
+
+    public Parameter calculateByBodyProperties(Double weight, Double height, Integer age, String gender, String activityLevel) {
+        try {
+            String apiUrl = String.format(API_URL_ROOT + CALCULATE_BY_BODY_API, weight, height, age, gender, activityLevel);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl))
+                    .GET()
+                    .build();
+            // Send the request and get the response
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Parse the response JSON into a List of FlaskResponseDTO
+            Parameter parameter= objectMapper.readValue(response.body(), Parameter.class);
+            return parameter;
+        }
+        catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            // Handle exceptions and return a default value
+            return null;
+        }
+    }
+
+
+    @Transactional
     public Parameter calculate(Double calories, Double proteins, Double carbs, Double fibers, Double fats, Double satFats) {
-        HttpClient client = HttpClient.newHttpClient();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             // Build the API URL with parameters
-            String apiUrl = String.format(API_URL, calories, proteins, fats, satFats, fibers, carbs);
+            String apiUrl = String.format(API_URL_ROOT + CALCULATE_API, calories, proteins, fats, satFats, fibers, carbs);
 
             // Create an HTTP GET request
             HttpRequest request = HttpRequest.newBuilder()
@@ -78,41 +87,43 @@ public class PythonAPI {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             // Parse the response JSON into a List of FlaskResponseDTO
-            List<FlaskResponseDTO> apiResponser = objectMapper.readValue(response.body(), new TypeReference<List<FlaskResponseDTO>>() {
-            });
+            List<FlaskResponseDTO> apiResponse = objectMapper.readValue(response.body(), new TypeReference<List<FlaskResponseDTO>>() {});
 
-
-            // Save the input parameters and the associated recipes to the database
-            Parameter parameter = parameterRepository.save(Parameter.builder()
+            // Save the input parameters to the database
+            Parameter parameter = Parameter.builder()
                     .sumCalories(calories)
                     .sumProteins(proteins)
                     .sumCarbs(carbs)
                     .sumFibers(fibers)
                     .sumFats(fats)
                     .sumSatFats(satFats)
-                    .build());
+                    .build();
 
+            // Save the parameter first to get its ID
+//            parameter = parameterRepository.save(parameter);
 
             List<Recipe> recipes = new ArrayList<>();
 
             // Process the list of FlaskResponseDTO
-            List<IngradientPercent> ingradientPercents = new ArrayList<>();
-            for (FlaskResponseDTO dto : apiResponser) {
-                IngradientPercent ingradientPercent = new IngradientPercent(dto.getPercent(), ingredientRepository.findById(dto.getId()).get());
-                ingradientPercents.add(ingradientPercent);
+            for (FlaskResponseDTO dto : apiResponse) {
+                IngradientPercent ingradientPercent = new IngradientPercent(dto.getPercent(), ingredientRepository.findById(dto.getId()).orElseThrow());
+
+                // Create a new Recipe and associate it with the Parameter
+                Recipe recipe = new Recipe();
+                recipe.setIngradientPercents(List.of(ingradientPercent)); // If there's one-to-many or you can add multiple percentages here
+                recipe.setParameter(parameter); // Associate the recipe with the saved Parameter
+                recipes.add(recipe);
             }
 
-            Recipe recipe = new Recipe();
-            recipe.setIngradientPercents(ingradientPercents);
-            recipe.setParameter(parameter);
-            recipes.add(recipe);
-
+            // Save the recipes (cascade should automatically save related IngredientPercent)
             recipes = recipeRepository.saveAll(recipes);
 
-            return parameterRepository.findById(parameter.getId()).get();
+            // Attach the recipes to the parameter
+            parameter.setRecipes(recipes);
+            parameter = parameterRepository.save(parameter); // Save the parameter again if needed to persist the relationship
 
-            // Return the saved parameter object (modify this as per your business logic)
-
+            // Return the saved parameter object
+            return parameterRepository.findById(parameter.getId()).orElseThrow();
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -120,4 +131,5 @@ public class PythonAPI {
             return Parameter.builder().sumFats(0.0).build();
         }
     }
+
 }
