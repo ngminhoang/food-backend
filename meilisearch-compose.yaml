@@ -5,7 +5,7 @@ services:
     environment:
       MEILI_MASTER_KEY: "your_meilisearch_master_key"  # Set a master key for authentication (optional)
     ports:
-      - "7700:7700"  # Expose Meilisearch on port 7700
+      - "7800:7700"  # Expose Meilisearch on port 7700
     volumes:
       - meili_data:/meili_data  # Persistent storage for Meilisearch data
 

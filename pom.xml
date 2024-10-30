@@ -35,7 +35,12 @@
             <groupId>com.meilisearch.sdk</groupId>
             <artifactId>meilisearch-java</artifactId>
             <version>0.14.1</version>
-            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version> <!-- Check for the latest version -->
         </dependency>
 
         <dependency>

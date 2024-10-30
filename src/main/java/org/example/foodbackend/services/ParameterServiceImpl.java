@@ -3,6 +3,7 @@ package org.example.foodbackend.services;
 import org.example.foodbackend.entities.Parameter;
 import org.example.foodbackend.entities.dto.ParameterResponseDTO;
 import org.example.foodbackend.other_services.PythonAPI;
+import org.example.foodbackend.repositories.MeilisearchRepository;
 import org.example.foodbackend.repositories.ParameterRepository;
 import org.example.foodbackend.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,15 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
     }
 
     @Autowired
+    MeilisearchRepository meilisearchRepository;
+
+    @Autowired
     PythonAPI pythonAPI;
 
     @Override
     public ResponseEntity<ParameterResponseDTO> findByNutrientProperties(Parameter parameter) {
 
-        Parameter result = findClosestMatch(parameter, repository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
+        Parameter result = findClosestMatch(parameter, rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
         if (result != null) {
             return ResponseEntity.ok(new ParameterResponseDTO(result));
         }
@@ -101,7 +105,7 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
                     .sumFibers(fiber)
                     .build();
 
-            Parameter result = findClosestMatch(parameter, repository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
+            Parameter result = findClosestMatch(parameter, rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
 
             if (result != null) {
                 return ResponseEntity.ok(new ParameterResponseDTO(result));

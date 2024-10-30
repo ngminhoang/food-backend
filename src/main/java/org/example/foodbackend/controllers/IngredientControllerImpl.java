@@ -21,4 +21,9 @@ public class IngredientControllerImpl extends BaseController<Ingradient, Long, I
     public ResponseEntity<List<IngradientResponseDTO>> getList() {
         return null;
     }
+
+    @Override
+    public ResponseEntity<List<IngradientResponseDTO>> search(String keyword, int page, int size) {
+        return ResponseEntity.ok(service.search(keyword, page, size).getBody().stream().map(IngradientResponseDTO::new).toList());
+    }
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.Category;
 import org.example.foodbackend.entities.IngradientPercent;
+import org.example.foodbackend.entities.enums.SearchStatus;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class Ingradient {
     private Double nuFats;
     private Double nuSatFats;
     private Double nuPrice;
+    private SearchStatus searchStatus = SearchStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
