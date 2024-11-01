@@ -11,7 +11,7 @@ import org.example.foodbackend.entities.enums.EUnit;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "kitchen_spice")
+@Table(name = "kitchen_ingredient")
 @Entity
 public class KitchenIngredient {
     @Id
@@ -25,4 +25,6 @@ public class KitchenIngredient {
     private String img_url;
     @Column
     private EUnit unit;
+    @Column
+    private int quantity;
 }

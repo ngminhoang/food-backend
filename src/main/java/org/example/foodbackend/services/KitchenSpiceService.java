@@ -1,4 +1,7 @@
 package org.example.foodbackend.services;
 
-public interface KitchenSpiceService {
+import org.example.foodbackend.entities.KitchenSpice;
+import org.example.foodbackend.services.base.BaseService;
+
+public interface KitchenSpiceService extends BaseService<KitchenSpice, Long> {
 }

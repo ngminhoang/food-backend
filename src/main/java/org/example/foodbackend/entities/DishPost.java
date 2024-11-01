@@ -5,9 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.foodbackend.entities.enums.EDaySession;
 import org.example.foodbackend.entities.enums.ELanguage;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -35,4 +38,5 @@ public class DishPost {
     private String dish_img_url;
     @Column
     private int dish_duration;
+    //todo: link everything up
 }
