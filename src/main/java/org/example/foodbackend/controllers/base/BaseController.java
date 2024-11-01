@@ -23,7 +23,7 @@ public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<List<T>> findAll() {
         return service.findAll();
     }

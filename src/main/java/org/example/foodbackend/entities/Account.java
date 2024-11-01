@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.foodbackend.entities.enums.ELanguage;
 import org.example.foodbackend.entities.enums.Erole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,16 +24,20 @@ import java.util.List;
 public class Account implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
-    @Column(name="mail",unique = true, nullable = false)
+    @Column(name = "mail", unique = true, nullable = false)
     private String mail;
-    @Column(name="password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name="name",nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(name="role")
+    @Column(name = "role")
     private Erole role;
+    @Column
+    private String avatar_url;
+    @Column
+    private ELanguage language;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

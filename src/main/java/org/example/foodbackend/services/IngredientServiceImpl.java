@@ -17,6 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+
 public class IngredientServiceImpl extends BaseServiceImpl<Ingradient, Long, IngredientRepository> implements IngredientService {
 
     public IngredientServiceImpl(IngredientRepository repository) {
