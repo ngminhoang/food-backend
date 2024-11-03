@@ -1,5 +1,8 @@
 package org.example.foodbackend.services.base;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 
@@ -39,6 +42,11 @@ public abstract class BaseServiceImpl<T, ID, R extends JpaRepository<T, ID>>{
             e.printStackTrace();
             return ResponseEntity.noContent().build();
         }
+    }
+
+    public Page<T> getListPagination(int page, int size) {
+            Pageable pageable = PageRequest.of(page, size);
+            return rootRepository.findAll(pageable);
     }
 
     public List<T> saveAll(List<T> entities) {

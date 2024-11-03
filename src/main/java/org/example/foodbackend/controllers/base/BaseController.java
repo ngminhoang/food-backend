@@ -1,6 +1,9 @@
 package org.example.foodbackend.controllers.base;
 
+import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
 import org.example.foodbackend.services.base.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,5 +53,23 @@ public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
     public ResponseEntity<Void> deleteById(@PathVariable ID id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/paginated-list")
+    public ResponseEntity<PaginatedResponseDTO<T>> getListPaged(@RequestParam int page, @RequestParam int size) {
+        try {
+            Page<T> pageResult = service.getListPagination(page, size);
+            List<T> dataList = pageResult.getContent();
+            PaginatedResponseDTO<T> responseDTO = PaginatedResponseDTO.<T>builder()
+                    .data(dataList)
+                    .currentPage(pageResult.getNumber())
+                    .totalPages(pageResult.getTotalPages())
+                    .totalItems(pageResult.getTotalElements())
+                    .build();
+            return ResponseEntity.ok(responseDTO);
+        } catch (Exception error) {
+            return ResponseEntity.noContent().build();
+        }
+
     }
 }

@@ -31,7 +31,7 @@ public class Post {
     private ELanguage language;
     @Column
     private String dish_name;
-    @Column
+    @Column(length = 500)
     private String dish_img_url;
     @Column
     private int duration;

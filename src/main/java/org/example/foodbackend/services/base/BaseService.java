@@ -1,5 +1,6 @@
 package org.example.foodbackend.services.base;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface BaseService<T, ID> {
     T findById(ID id);
     ResponseEntity<List<T>> findAll();
     List<T> saveAll(List<T> entities);
+    Page<T> getListPagination(int page, int size);
 }

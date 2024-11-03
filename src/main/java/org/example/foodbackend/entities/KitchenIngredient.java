@@ -21,7 +21,7 @@ public class KitchenIngredient {
     private String name_en;
     @Column
     private String name_vi;
-    @Column
+    @Column(length = 500)
     private String img_url;
     @Column
     private EUnit unit;
