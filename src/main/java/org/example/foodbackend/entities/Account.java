@@ -1,5 +1,6 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Entity
@@ -38,6 +40,10 @@ public class Account implements UserDetails {
     private String avatar_url;
     @Column
     private ELanguage language;
+    @ManyToMany
+    @JoinTable(name = "user_tools", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "tool_id"))
+    @JsonIgnore
+    Set<KitchenTool> listTools;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
