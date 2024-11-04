@@ -1,6 +1,7 @@
 package org.example.foodbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class KitchenTool {
     private String name_vi;
     @Column(length = 500)
     private String img_url;
-    @JsonIgnore
     @ManyToMany(mappedBy = "listTools")
+    @JsonIgnore
     private Set<Account> listUsers;
 }

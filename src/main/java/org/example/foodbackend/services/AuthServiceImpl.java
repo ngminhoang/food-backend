@@ -5,12 +5,15 @@ import org.example.foodbackend.authentication.AuthenticationResponse;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.configuration.JwtService;
 import org.example.foodbackend.entities.Account;
+import org.example.foodbackend.entities.KitchenTool;
 import org.example.foodbackend.entities.enums.Erole;
 import org.example.foodbackend.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,5 +50,10 @@ public class AuthServiceImpl implements AuthService {
         accountRepository.save(user);
         String jwt = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwt).build();
+    }
+
+    public List<KitchenTool> getUserInfo(Long userId) {
+        Account user = accountRepository.findById(userId).get();
+        return user.getListTools().stream().toList();
     }
 }

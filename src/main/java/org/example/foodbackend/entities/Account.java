@@ -1,6 +1,6 @@
 package org.example.foodbackend.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,10 +40,9 @@ public class Account implements UserDetails {
     private String avatar_url;
     @Column
     private ELanguage language;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_tools", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "tool_id"))
-    @JsonIgnore
-    Set<KitchenTool> listTools;
+    private Set<KitchenTool> listTools;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -74,6 +73,11 @@ public class Account implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{id=" + id + ", name='" + name + "'}";  // Avoid listing lazy-loaded fields like listTools here
     }
 
 }

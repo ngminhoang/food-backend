@@ -5,48 +5,45 @@ import org.example.foodbackend.entities.KitchenTool;
 import org.example.foodbackend.repositories.AccountRepository;
 import org.example.foodbackend.repositories.KitchenToolRepository;
 import org.example.foodbackend.services.base.BaseServiceImpl;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class KitchenToolServiceImpl extends BaseServiceImpl<KitchenTool, Long, KitchenToolRepository> implements KitchenToolService {
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final KitchenToolRepository kitchenToolRepository;
 
-    public KitchenToolServiceImpl(KitchenToolRepository rootRepository) {
+    @Autowired
+    public KitchenToolServiceImpl(KitchenToolRepository rootRepository, AccountRepository accountRepository, KitchenToolRepository kitchenToolRepository) {
         super(rootRepository);
+        this.accountRepository = accountRepository;
+        this.kitchenToolRepository = kitchenToolRepository;
     }
 
     @Override
     public ResponseEntity<Set<KitchenTool>> getUserKitchenTools(Account user) {
-        try {
-            Account account = accountRepository.findById(user.getId()).orElseThrow(ChangeSetPersister.NotFoundException::new);
-            System.out.println(account.getListTools());
-            return ResponseEntity.ok(account.getListTools());
-        } catch (ChangeSetPersister.NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Account account = accountRepository.findById(user.getId()).get();
+        Hibernate.initialize(account.getListTools());
+        return ResponseEntity.ok(account.getListTools());
     }
 
     @Override
-    @Transactional
     public ResponseEntity<List<KitchenTool>> addUserKitchenTool(Account user, List<Long> kitchenToolIds) {
         try {
             Account account = accountRepository.findById(user.getId()).orElseThrow(ChangeSetPersister.NotFoundException::new);
-            List<KitchenTool> kitchenTools = rootRepository.findAllById(kitchenToolIds);
-            Set<KitchenTool> userListTools = account.getListTools();
-            for (KitchenTool kitchenTool : kitchenTools) {
-                System.out.println(kitchenTool.getId());
-                userListTools.add(kitchenTool);
-                kitchenTool.getListUsers().add(account);
-            }
+            List<KitchenTool> kitchenTools = kitchenToolRepository.findAllById(kitchenToolIds);
+//            for (KitchenTool kitchenTool : kitchenTools) {
+//                kitchenTool.set
+//            }
+            account.setListTools(new HashSet<>(kitchenTools));
+            System.out.println(account.getListTools());
             accountRepository.save(account);
             return ResponseEntity.ok(kitchenTools);
         } catch (ChangeSetPersister.NotFoundException e) {
