@@ -13,10 +13,6 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.mail = :mail")
     Optional<Account> findByMail(String mail);
-
-    @NotNull
-    @EntityGraph(attributePaths = {"listTools"})
-    Optional<Account> findById(Long id);
 }
 
 

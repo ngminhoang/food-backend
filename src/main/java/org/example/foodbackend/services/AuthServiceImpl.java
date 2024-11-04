@@ -54,6 +54,6 @@ public class AuthServiceImpl implements AuthService {
 
     public List<KitchenTool> getUserInfo(Long userId) {
         Account user = accountRepository.findById(userId).get();
-        return user.getListTools().stream().toList();
+        return user.getTools().stream().toList();
     }
 }

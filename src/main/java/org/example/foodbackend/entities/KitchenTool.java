@@ -26,7 +26,7 @@ public class KitchenTool {
     private String name_vi;
     @Column(length = 500)
     private String img_url;
-    @ManyToMany(mappedBy = "listTools")
+    @ManyToMany(mappedBy = "tools")
     @JsonIgnore
     private Set<Account> listUsers;
 }

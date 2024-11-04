@@ -1,5 +1,6 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,9 +41,13 @@ public class Account implements UserDetails {
     private String avatar_url;
     @Column
     private ELanguage language;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "user_tools", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "tool_id"))
-    private Set<KitchenTool> listTools;
+    private List<KitchenTool> tools;
+    @ManyToMany
+    @JoinTable(name = "user_spices", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "spice_id"))
+    private List<KitchenSpice> spices;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,10 +1,10 @@
 package org.example.foodbackend.controllers;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import org.example.foodbackend.controllers.base.BaseController;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.KitchenTool;
-import org.example.foodbackend.repositories.AccountRepository;
 import org.example.foodbackend.services.KitchenToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +24,12 @@ public class KitchenToolControllerImpl extends BaseController<KitchenTool, Long,
     }
 
     @GetMapping("/user/tool/list")
-    public ResponseEntity<Set<KitchenTool>> getUserListTools(@AuthenticationPrincipal Account user) {
+    public ResponseEntity<List<KitchenTool>> getUserListTools(@AuthenticationPrincipal Account user) {
         return service.getUserKitchenTools(user);
     }
 
     @PostMapping("/user/tool")
+    @Transactional
     public ResponseEntity<List<KitchenTool>> addUserKitchenTool(@AuthenticationPrincipal Account user, @RequestBody List<Long> kitchenToolIds) {
         return service.addUserKitchenTool(user, kitchenToolIds);
     }

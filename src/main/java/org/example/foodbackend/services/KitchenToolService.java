@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface KitchenToolService extends BaseService<KitchenTool, Long> {
 
-    ResponseEntity<Set<KitchenTool>> getUserKitchenTools(Account user);
+    ResponseEntity<List<KitchenTool>> getUserKitchenTools(Account user);
     ResponseEntity<List<KitchenTool>> addUserKitchenTool(Account user, List<Long> kitchenToolIds);
     KitchenTool deleteUserKitchenTool(Account user, Long kitchenToolId);
 }
