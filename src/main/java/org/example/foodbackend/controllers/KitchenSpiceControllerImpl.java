@@ -22,12 +22,17 @@ public class KitchenSpiceControllerImpl extends BaseController<KitchenSpice, Lon
     @PostMapping("/user/spice")
     public ResponseEntity<List<KitchenSpice>> addUserSpices(
             @AuthenticationPrincipal Account account
-            ,@RequestBody List<Long> spiceIds) {
+            , @RequestBody List<Long> spiceIds) {
         return service.addUserSpices(account, spiceIds);
     }
 
     @GetMapping("/user/spice/list")
     public ResponseEntity<List<KitchenSpice>> getUserSpices(@AuthenticationPrincipal Account account) {
+        return service.getUserSpices(account);
+    }
+
+    @GetMapping("/user/spice/not-added")
+    public ResponseEntity<List<KitchenSpice>> getUserSpiceNotAdded(@AuthenticationPrincipal Account account) {
         return service.getUserSpices(account);
     }
 }

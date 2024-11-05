@@ -33,4 +33,9 @@ public class KitchenToolControllerImpl extends BaseController<KitchenTool, Long,
     public ResponseEntity<List<KitchenTool>> addUserKitchenTool(@AuthenticationPrincipal Account user, @RequestBody List<Long> kitchenToolIds) {
         return service.addUserKitchenTool(user, kitchenToolIds);
     }
+
+    @GetMapping("/user/tool/not-added")
+    public ResponseEntity<List<KitchenTool>> getUserKitchenToolNotAdded(@AuthenticationPrincipal Account user) {
+        return service.getAllKitchenTools(user);
+    }
 }

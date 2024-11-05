@@ -19,10 +19,18 @@ import java.util.Set;
 @Service
 public class KitchenToolServiceImpl extends BaseServiceImpl<KitchenTool, Long, KitchenToolRepository> implements KitchenToolService {
     private final AccountRepository accountRepository;
+
     @Autowired
     public KitchenToolServiceImpl(KitchenToolRepository rootRepository, AccountRepository accountRepository, KitchenToolRepository kitchenToolRepository) {
         super(rootRepository);
         this.accountRepository = accountRepository;
+    }
+
+
+    @Override
+    public ResponseEntity<List<KitchenTool>> getAllKitchenTools(Account user) {
+        Account account = accountRepository.findById(user.getId()).get();
+        return ResponseEntity.ok(rootRepository.getKitchenToolsNotAdded(account));
     }
 
     @Override
