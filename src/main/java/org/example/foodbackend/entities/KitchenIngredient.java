@@ -1,11 +1,14 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.enums.EUnit;
+
+import java.util.Set;
 
 @Data
 @Builder
@@ -25,6 +28,7 @@ public class KitchenIngredient {
     private String img_url;
     @Column
     private EUnit unit;
-    @Column
-    private int quantity;
+    @OneToMany(mappedBy = "ingredient")
+    @JsonIgnore
+    private Set<UserIngredient> userIngredients;
 }

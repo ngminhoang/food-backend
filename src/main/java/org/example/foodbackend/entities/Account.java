@@ -47,7 +47,8 @@ public class Account implements UserDetails {
     @ManyToMany
     @JoinTable(name = "user_spices", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "spice_id"))
     private List<KitchenSpice> spices;
-
+    @OneToMany(mappedBy = "user")
+    private List<UserIngredient> userIngredients;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface KitchenSpiceService extends BaseService<KitchenSpice, Long> {
     ResponseEntity<List<KitchenSpice>> addUserSpices(Account user, List<Long> spiceIds);
+    ResponseEntity<List<KitchenSpice>> getUserSpices(Account user);
 }

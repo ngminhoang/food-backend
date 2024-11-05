@@ -28,7 +28,6 @@ public class KitchenSpiceControllerImpl extends BaseController<KitchenSpice, Lon
 
     @GetMapping("/user/spice/list")
     public ResponseEntity<List<KitchenSpice>> getUserSpices(@AuthenticationPrincipal Account account) {
-//        return service.getUserSpices(account);
-        return null;
+        return service.getUserSpices(account);
     }
 }
