@@ -33,6 +33,6 @@ public class KitchenSpiceControllerImpl extends BaseController<KitchenSpice, Lon
 
     @GetMapping("/user/spice/not-added")
     public ResponseEntity<List<KitchenSpice>> getUserSpiceNotAdded(@AuthenticationPrincipal Account account) {
-        return service.getUserSpices(account);
+        return service.getListSpicesNotAdded(account);
     }
 }
