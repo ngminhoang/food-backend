@@ -52,8 +52,8 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingradient, Long, Ing
     }
 
     @Override
-    public ResponseEntity<List<Ingradient>> search(String query, int page, int size) {
-        List<Long> ids = meilisearchRepository.searchIngredients(query, page, size);
+    public ResponseEntity<List<Ingradient>> search(String query, int page, int size,String sort, String order) {
+        List<Long> ids = meilisearchRepository.searchIngredients(query, page, size, sort, order);
         return ResponseEntity.ok(rootRepository.findByIdIn(ids));
 
     }

@@ -9,5 +9,5 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IngredientService extends BaseService<Ingradient, Long> {
-    ResponseEntity<List<Ingradient>> search(String query, int page, int size);
+    ResponseEntity<List<Ingradient>> search(String query, int page, int size, String sort, String order);
 }

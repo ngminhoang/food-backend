@@ -63,10 +63,8 @@ public class MeilisearchRepository {
     }
 
     private void configureIndexSettings(Index index) throws MeilisearchException {
-        // Define the attributes structure of the index
-        Settings settings = new Settings();
-        settings.setFilterableAttributes(new String[]{"id", "name", "type", "calo", "protein", "fat", "satFat", "fiber", "carb"});
-        index.updateSettings(settings);
+
+        index.updateSortableAttributesSettings(new String[]{"id", "name", "type", "calo", "protein", "fat", "satFat", "fiber", "carb"});
         System.out.println("Index settings updated for filtering attributes.");
     }
 
@@ -81,21 +79,18 @@ public class MeilisearchRepository {
         }
     }
 
-    public List<Long> searchIngredients(String query, int page, int size) {
+    public List<Long> searchIngredients(String query, int page, int size, String sort, String order) {
         try {
-            // Tính toán offset dựa trên page và size
             int offset = (page - 1) * size;
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .q(query)
+                    .offset(offset)
+                    .limit(size)
+                    .sort(new String[]{sort + ":" + order}).build();
 
-            // Tạo SearchRequest với query, offset và limit
-            SearchRequest searchRequest = new SearchRequest(query)
-                    .setOffset(offset)
-                    .setLimit(size);
 
             // Thực hiện tìm kiếm
-            SearchResult searchResult = (SearchResult) index.search(searchRequest);
-
-            // Kiểm tra dữ liệu hits trong SearchResult
-            ArrayList<HashMap<String, Object>> hits = searchResult.getHits();
+            ArrayList<HashMap<String, Object>> hits = index.search(searchRequest).getHits();
 
             // Chuyển đổi danh sách các Map thành danh sách MeilisearchIngredient
             List<Long> ingredients = new ArrayList<>();

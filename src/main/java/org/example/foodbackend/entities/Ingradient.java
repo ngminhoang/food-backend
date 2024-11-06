@@ -38,6 +38,9 @@ public class Ingradient {
     private Double nuPrice;
     private SearchStatus searchStatus = SearchStatus.PENDING;
 
+    @ElementCollection
+    private List<String> imgPaths;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @JsonIgnore
