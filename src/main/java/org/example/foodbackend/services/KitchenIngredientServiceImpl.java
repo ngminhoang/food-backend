@@ -105,4 +105,25 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
                 .totalPages(kitchenIngredientResponseDTOS.getTotalPages())
                 .build();
     }
+
+    @Override
+    public ResponseEntity<KitchenIngredientResponseDTO> editQuantityIngredient(Account user, KitchenIngredientRequestDTO kitchenIngredientRequestDTO) {
+        try {
+            UserIngredient userIngredient = userIngredientRepository.findByUserIdAndIngredientId(user.getId(), kitchenIngredientRequestDTO.getId())
+                    .orElseThrow(ChangeSetPersister.NotFoundException::new);
+            userIngredient.setQuantity(kitchenIngredientRequestDTO.getQuantity());
+            userIngredientRepository.save(userIngredient);
+            KitchenIngredient kitchenIngredient = rootRepository.findById(kitchenIngredientRequestDTO.getId()).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            return ResponseEntity.ok(KitchenIngredientResponseDTO.builder()
+                    .id(kitchenIngredient.getId())
+                    .name_vi(kitchenIngredient.getName_vi())
+                    .name_en(kitchenIngredient.getName_en())
+                    .img_url(kitchenIngredient.getImg_url())
+                    .unit(kitchenIngredient.getUnit())
+                    .quantity(userIngredient.getQuantity())
+                    .build());
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

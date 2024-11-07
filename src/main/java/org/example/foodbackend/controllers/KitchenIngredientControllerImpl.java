@@ -43,4 +43,12 @@ public class KitchenIngredientControllerImpl extends BaseController<KitchenIngre
             @RequestParam int size) {
         return service.getListIngredientsNotAdded(account, page, size);
     }
+
+    @PutMapping("user/ingredient")
+    public ResponseEntity<KitchenIngredientResponseDTO> editQuantityIngredient(
+            @AuthenticationPrincipal Account user,
+            @RequestBody KitchenIngredientRequestDTO ingredient
+    ) {
+        return service.editQuantityIngredient(user, ingredient);
+    }
 }

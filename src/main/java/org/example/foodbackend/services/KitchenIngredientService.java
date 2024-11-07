@@ -10,9 +10,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface KitchenIngredientService extends BaseService<KitchenIngredient, Long> {
     PaginatedResponseDTO<KitchenIngredientResponseDTO> getUserIngredients(Account user, int page, int size);
-
     ResponseEntity<KitchenIngredientRequestDTO> addUserIngredient(Account user, KitchenIngredientRequestDTO kitchenIngredientRequestDTO);
-
     ResponseEntity<KitchenIngredientResponseDTO> deleteUserIngredient(Account user, Long ingredientId);
     PaginatedResponseDTO<KitchenIngredientResponseDTO> getListIngredientsNotAdded(Account user, int page, int size);
+    ResponseEntity<KitchenIngredientResponseDTO> editQuantityIngredient(Account user, KitchenIngredientRequestDTO kitchenIngredientRequestDTO);
 }
