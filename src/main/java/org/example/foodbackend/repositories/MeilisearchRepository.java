@@ -51,6 +51,7 @@ public class MeilisearchRepository {
                 configureIndexSettings(createdIndex);
                 return createdIndex;
             } else {
+                configureIndexSettings(client.index(INDEX_NAME));
                 System.out.println("Index already exists: " + INDEX_NAME);
                 return client.index(INDEX_NAME);
             }

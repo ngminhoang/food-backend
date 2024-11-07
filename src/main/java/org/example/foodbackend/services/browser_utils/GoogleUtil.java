@@ -27,7 +27,7 @@ public class GoogleUtil {
     protected WebDriver driver;
 
     public GoogleUtil() {
-//        WebDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
     }
 
@@ -37,43 +37,50 @@ public class GoogleUtil {
             List<Ingradient> ingradientList = ingredientRepository.findAllWhereNoImg(pageable);
 
             for (Ingradient ingradient : ingradientList) {
-                // Navigate to Google search for the food
+                // Điều hướng đến Google Image Search cho tên của ingredient
                 driver.get("https://www.google.com/search?udm=2&q=" + ingradient.getName() + "&tbm=isch");
 
-                // Wait for the page to load
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("img")));
+                // Đợi cho các hình ảnh được load
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("rg_i")));
 
-                // Locate the image elements on the page
-                List<WebElement> imageElements = driver.findElements(By.cssSelector("img"));
-
-                // Limit to first 3 images (or fewer if there are less than 3)
+                // Lấy danh sách các thẻ img có class "rg_i Q4LuWd" và chỉ lấy đúng 3 URL
                 List<String> imageUrls = new ArrayList<>();
-                for (int i = 0; i < Math.min(3, imageElements.size()); i++) {
-                    WebElement image = imageElements.get(i);
-                    String imageUrl = image.getAttribute("src"); // Get the URL of the image
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
-                        imageUrls.add(imageUrl);
-                    }
+                List<WebElement> imageElements = driver.findElements(By.cssSelector("img.rg_i.Q4LuWd"));
+
+                int count = 0;
+                for (WebElement imgElement : imageElements) {
+                    if (count >= 3) break;
+
+                    String imgUrl = imgElement.getAttribute("src");
+                    imageUrls.add(imgUrl);
+                    count++;
+//                    if (imgUrl == null || imgUrl.isEmpty()) {
+//                        imgUrl = imgElement.getAttribute("data-src");
+//                    }
+//
+//                    if (imgUrl != null && !imgUrl.isEmpty()) {
+//                        imageUrls.add(imgUrl);
+//                        count++;
+//                    }
                 }
 
-                // Check if we found image URLs
-                if (!imageUrls.isEmpty()) {
-                    // Save the image URLs to the Ingradient entity
-                    ingradient.setImgPaths(imageUrls);  // Assuming imgPaths is a List<String> in Ingradient entity
-                    ingredientRepository.save(ingradient); // Save to the database
-                    log.info("Image URLs saved for: " + ingradient.getName());
-                } else {
-                    log.warn("No images found for: " + ingradient.getName());
+                // In ra các URL hoặc lưu vào database theo nhu cầu của bạn
+                for (String url : imageUrls) {
+                    System.out.println("Image URL: " + url);
+                    // Lưu URL vào cơ sở dữ liệu nếu cần thiết, ví dụ:
+                    // ingradientRepository.updateImageUrl(ingradient.getId(), url);
                 }
             }
 
         } catch (Exception e) {
             log.error("Error performing daily search", e);
         } finally {
-
+            // Đóng driver hoặc các resource nếu cần
         }
     }
+
+
 
     public void shutdown() {
         if (driver != null) {
