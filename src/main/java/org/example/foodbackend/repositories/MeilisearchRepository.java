@@ -6,8 +6,6 @@ import com.meilisearch.sdk.Config;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.exceptions.MeilisearchException;
-import com.meilisearch.sdk.model.SearchResult;
-import com.meilisearch.sdk.model.Settings;
 import org.example.foodbackend.entities.dto.MeilisearchIngredient;
 import org.springframework.stereotype.Component;
 
@@ -76,6 +74,30 @@ public class MeilisearchRepository {
             System.out.println("Ingredient added to Meilisearch index: " + ingredient);
         } catch (MeilisearchException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<String> suggestIngredients(String query) {
+        try {
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .q(query)
+                    .limit(10)
+                    .build();
+
+            ArrayList<HashMap<String, Object>> hits = index.search(searchRequest).getHits();
+
+            List<String> names = new ArrayList<>();
+            for (Map<String, Object> hit : hits) {
+                String name = objectMapper.convertValue(hit, MeilisearchIngredient.class).getName();
+                names.add(name);
+            }
+
+            System.out.println("Found " + names.size() + " names for query: " + query);
+            return names;
+
+        } catch (MeilisearchException e) {
+            e.printStackTrace();
+            return new ArrayList<>(); // Return an empty list in case of an error
         }
     }
 

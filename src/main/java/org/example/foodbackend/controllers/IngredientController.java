@@ -15,4 +15,7 @@ public interface IngredientController {
 
     @GetMapping("/search")
     ResponseEntity<List<IngradientResponseDTO>> search(@RequestParam String keyword, @RequestParam int page, @RequestParam int size, @RequestParam String sort, @RequestParam String order);
+    @GetMapping("/suggest")
+    ResponseEntity<List<String>> suggest(@RequestParam String keyword);
+
 }

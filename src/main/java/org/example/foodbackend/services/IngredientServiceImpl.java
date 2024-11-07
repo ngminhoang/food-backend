@@ -57,4 +57,10 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingradient, Long, Ing
         return ResponseEntity.ok(rootRepository.findByIdIn(ids));
 
     }
+
+    @Override
+    public ResponseEntity<List<String>> suggestion(String query) {
+        List<String> names = meilisearchRepository.suggestIngredients(query);
+        return ResponseEntity.ok(names);
+    }
 }
