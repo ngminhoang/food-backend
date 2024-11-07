@@ -56,7 +56,15 @@ public class KitchenToolServiceImpl extends BaseServiceImpl<KitchenTool, Long, K
     }
 
     @Override
-    public KitchenTool deleteUserKitchenTool(Account user, Long kitchenToolId) {
-        return null;
+    public ResponseEntity<KitchenTool> deleteUserKitchenTool(Account user, Long kitchenToolId) {
+        try {
+            KitchenTool kitchenTool = rootRepository.findById(kitchenToolId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            Account account = accountRepository.findById(user.getId()).get();
+            account.getTools().remove(kitchenTool);
+            accountRepository.save(account);
+            return ResponseEntity.ok(kitchenTool);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

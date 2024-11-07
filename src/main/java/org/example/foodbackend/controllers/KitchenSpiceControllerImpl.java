@@ -35,4 +35,9 @@ public class KitchenSpiceControllerImpl extends BaseController<KitchenSpice, Lon
     public ResponseEntity<List<KitchenSpice>> getUserSpiceNotAdded(@AuthenticationPrincipal Account account) {
         return service.getListSpicesNotAdded(account);
     }
+
+    @DeleteMapping("user/spice/{id}")
+    public ResponseEntity<KitchenSpice> deleteUserSpice(@AuthenticationPrincipal Account account, @PathVariable Long id) {
+        return service.deleteUserSpices(account, id);
+    }
 }

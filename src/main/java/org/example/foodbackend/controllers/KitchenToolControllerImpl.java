@@ -38,4 +38,9 @@ public class KitchenToolControllerImpl extends BaseController<KitchenTool, Long,
     public ResponseEntity<List<KitchenTool>> getUserKitchenToolNotAdded(@AuthenticationPrincipal Account user) {
         return service.getAllKitchenTools(user);
     }
+
+    @DeleteMapping("user/tool/{id}")
+    public ResponseEntity<KitchenTool> deleteUserKitchenTool(@AuthenticationPrincipal Account user, @PathVariable Long id) {
+        return service.deleteUserKitchenTool(user, id);
+    }
 }

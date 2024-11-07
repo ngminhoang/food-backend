@@ -6,6 +6,7 @@ import org.example.foodbackend.repositories.AccountRepository;
 import org.example.foodbackend.repositories.KitchenSpiceRepository;
 import org.example.foodbackend.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class KitchenSpiceServiceImpl extends BaseServiceImpl<KitchenSpice, Long,
     public ResponseEntity<List<KitchenSpice>> addUserSpices(Account user, List<Long> spiceIds) {
         List<KitchenSpice> kitchenSpices = rootRepository.findAllById(spiceIds);
         Account account = accountRepository.findById(user.getId()).get();
-        account.setSpices(kitchenSpices);
+        account.getSpices().addAll(kitchenSpices);
         accountRepository.save(account);
         return ResponseEntity.ok(kitchenSpices);
     }
@@ -42,5 +43,18 @@ public class KitchenSpiceServiceImpl extends BaseServiceImpl<KitchenSpice, Long,
     public ResponseEntity<List<KitchenSpice>> getUserSpices(Account user) {
         Account account = accountRepository.findById(user.getId()).get();
         return ResponseEntity.ok(account.getSpices());
+    }
+
+    @Override
+    public ResponseEntity<KitchenSpice> deleteUserSpices(Account user, Long spiceId) {
+        try {
+            KitchenSpice kitchenSpice = rootRepository.findById(spiceId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            Account account = accountRepository.findById(user.getId()).get();
+            account.getSpices().remove(kitchenSpice);
+            accountRepository.save(account);
+            return ResponseEntity.ok(kitchenSpice);
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
