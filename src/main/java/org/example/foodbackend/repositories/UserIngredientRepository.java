@@ -17,7 +17,8 @@ import java.util.Optional;
 public interface UserIngredientRepository extends JpaRepository<UserIngredient, Long> {
     Page<UserIngredient> findByUser(Account user, Pageable pageable);
 
-    Optional<UserIngredient> findByUser(Account user);
+    @Query("SELECT ui FROM UserIngredient ui WHERE ui.user.id = :userId AND ui.ingredient.id = :ingredientId")
+    Optional<UserIngredient> findByUserIdAndIngredientId(Long userId, Long ingredientId);
 
     @Modifying
     @Transactional

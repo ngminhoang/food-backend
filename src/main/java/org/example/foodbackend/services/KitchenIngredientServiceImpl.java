@@ -29,11 +29,21 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
     }
 
     @Override
-    public PaginatedResponseDTO<KitchenIngredient> getUserIngredients(Account user, int page, int size) {
+    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getUserIngredients(Account user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<UserIngredient> userIngredients = userIngredientRepository.findByUser(user, pageable);
-        Page<KitchenIngredient> ingredientPage = userIngredients.map(UserIngredient::getIngredient);
-        return PaginatedResponseDTO.<KitchenIngredient>builder()
+        Page<KitchenIngredientResponseDTO> ingredientPage = userIngredients.map(userIngredient -> {
+            KitchenIngredient kitchenIngredient = userIngredient.getIngredient();
+            return KitchenIngredientResponseDTO.builder()
+                    .id(kitchenIngredient.getId())
+                    .name_vi(kitchenIngredient.getName_vi())
+                    .name_en(kitchenIngredient.getName_en())
+                    .img_url(kitchenIngredient.getImg_url())
+                    .unit(kitchenIngredient.getUnit())
+                    .quantity(userIngredient.getQuantity())
+                    .build();
+        });
+        return PaginatedResponseDTO.<KitchenIngredientResponseDTO>builder()
                 .data(ingredientPage.getContent())
                 .currentPage(ingredientPage.getNumber())
                 .totalItems(ingredientPage.getTotalElements())
@@ -42,7 +52,7 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
     }
 
     @Override
-    public ResponseEntity<KitchenIngredientRequestDTO>  addUserIngredient(Account user, KitchenIngredientRequestDTO kitchenIngredientRequestDTO) {
+    public ResponseEntity<KitchenIngredientRequestDTO> addUserIngredient(Account user, KitchenIngredientRequestDTO kitchenIngredientRequestDTO) {
         try {
             Account account = accountRepository.findById(user.getId()).get();
             KitchenIngredient kitchenIngredient = rootRepository.findById(kitchenIngredientRequestDTO.getId()).orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -59,7 +69,40 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
     }
 
     @Override
-    public KitchenIngredientResponseDTO deleteUserIngredient(Account user, Long ingredientId) {
-        return null;
+    public ResponseEntity<KitchenIngredientResponseDTO> deleteUserIngredient(Account user, Long ingredientId) {
+        try {
+            KitchenIngredient ingredient = rootRepository.findById(ingredientId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            UserIngredient userIngredient = userIngredientRepository.findByUserIdAndIngredientId(user.getId(), ingredient.getId()).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            userIngredientRepository.deleteByIngredientIdAndUserId(ingredientId, user.getId());
+
+            return ResponseEntity.ok(KitchenIngredientResponseDTO.builder()
+                    .id(ingredient.getId())
+                    .name_vi(ingredient.getName_vi())
+                    .name_en(ingredient.getName_en())
+                    .img_url(ingredient.getImg_url())
+                    .unit(ingredient.getUnit())
+                    .quantity(userIngredient.getQuantity())
+                    .build());
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Override
+    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getListIngredientsNotAdded(Account user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<KitchenIngredient> ingredientsPages = rootRepository.getAllKitchenIngredientsNotAdded(user, pageable);
+        Page<KitchenIngredientResponseDTO> kitchenIngredientResponseDTOS = ingredientsPages.map(ingredientsPage -> KitchenIngredientResponseDTO.builder().id(ingredientsPage.getId())
+                .name_vi(ingredientsPage.getName_vi())
+                .name_en(ingredientsPage.getName_en())
+                .img_url(ingredientsPage.getImg_url())
+                .unit(ingredientsPage.getUnit())
+                .build());
+        return PaginatedResponseDTO.<KitchenIngredientResponseDTO>builder()
+                .data(kitchenIngredientResponseDTOS.getContent())
+                .currentPage(kitchenIngredientResponseDTOS.getNumber())
+                .totalItems(kitchenIngredientResponseDTOS.getTotalElements())
+                .totalPages(kitchenIngredientResponseDTOS.getTotalPages())
+                .build();
     }
 }
