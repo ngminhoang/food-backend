@@ -5,28 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "instruction_step")
-public class InstructionStep {
+@Table(name = "cook_history")
+public class CookHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
-    private int step;
-    @Column
-    private String title;
-    @Column
-    private String description;
-    @Column
-    private Integer duration;
-    @Column(length = 500)
-    private String img_url;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private Account user;
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+    @Column
+    @CreationTimestamp
+    private LocalDateTime cooked_time;
 }

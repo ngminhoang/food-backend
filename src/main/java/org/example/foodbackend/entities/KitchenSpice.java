@@ -28,4 +28,7 @@ public class KitchenSpice {
     @ManyToMany(mappedBy = "spices")
     @JsonIgnore
     private Set<Account> users;
+    @ManyToMany(mappedBy = "spices")
+    @JsonIgnore
+    private Set<Post> posts;
 }

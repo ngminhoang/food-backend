@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.enums.EUnit;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -17,4 +19,5 @@ public class KitchenIngredientResponseDTO {
     private String img_url;
     private EUnit unit;
     private int quantity;
+    private LocalDateTime created_at;
 }

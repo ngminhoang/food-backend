@@ -49,6 +49,9 @@ public class Account implements UserDetails {
     private List<KitchenSpice> spices;
     @OneToMany(mappedBy = "user")
     private List<UserIngredient> userIngredients;
+    @OneToOne(mappedBy = "user")
+    @JsonIgnore
+    private Post post;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

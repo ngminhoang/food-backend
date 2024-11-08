@@ -50,12 +50,12 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public ResponseEntity<UserInfoDTO> updateUserInfo(Account account, UserInfoDTO userInfoDTO) {
-        return null;
+        return authService.updateUserInfo(account.getId(), userInfoDTO);
     }
 
     @Override
     public ResponseEntity<?> updateUserInfoLanguage(Account account, UserLanguageDTO userLanguageDTO) {
-        return null;
+        return authService.updateUserLanguage(account.getId(), userLanguageDTO.getLanguage());
     }
 
 }

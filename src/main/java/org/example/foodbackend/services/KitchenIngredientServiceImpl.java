@@ -14,6 +14,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,9 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
 
     @Override
     public PaginatedResponseDTO<KitchenIngredientResponseDTO> getUserIngredients(Account user, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<UserIngredient> userIngredients = userIngredientRepository.findByUser(user, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "createdAt"));
+        Page<UserIngredient> userIngredients = userIngredientRepository
+                .findByUser(user, pageable);
         Page<KitchenIngredientResponseDTO> ingredientPage = userIngredients.map(userIngredient -> {
             KitchenIngredient kitchenIngredient = userIngredient.getIngredient();
             return KitchenIngredientResponseDTO.builder()
@@ -41,6 +43,7 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
                     .img_url(kitchenIngredient.getImg_url())
                     .unit(kitchenIngredient.getUnit())
                     .quantity(userIngredient.getQuantity())
+                    .created_at(userIngredient.getCreatedAt())
                     .build();
         });
         return PaginatedResponseDTO.<KitchenIngredientResponseDTO>builder()
@@ -121,6 +124,7 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
                     .img_url(kitchenIngredient.getImg_url())
                     .unit(kitchenIngredient.getUnit())
                     .quantity(userIngredient.getQuantity())
+                    .created_at(userIngredient.getCreatedAt())
                     .build());
         } catch (ChangeSetPersister.NotFoundException e) {
             return ResponseEntity.notFound().build();

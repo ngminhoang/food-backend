@@ -29,4 +29,7 @@ public class KitchenTool {
     @ManyToMany(mappedBy = "tools")
     @JsonIgnore
     private Set<Account> listUsers;
+    @ManyToMany(mappedBy = "tools")
+    @JsonIgnore
+    private Set<Post> posts;
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.enums.ELanguage;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -35,4 +36,26 @@ public class Post {
     private String dish_img_url;
     @Column
     private int duration;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private Account user;
+    @OneToMany(mappedBy = "post")
+    private Set<InstructionStep> steps;
+    @ManyToMany
+    @JoinTable(name = "post_tools",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tool_id"))
+    private Set<KitchenTool> tools;
+    @ManyToMany
+    @JoinTable(name = "post_spices",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "spice_id"))
+    private Set<KitchenSpice> spices;
+    @ManyToMany
+    @JoinTable(name = "post_ingredients",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
+    private Set<KitchenIngredient> ingredients;
+    @OneToMany
+    private Set<CookHistory> histories;
 }

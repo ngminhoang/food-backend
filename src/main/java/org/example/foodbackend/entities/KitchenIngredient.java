@@ -31,4 +31,7 @@ public class KitchenIngredient {
     @OneToMany(mappedBy = "ingredient")
     @JsonIgnore
     private Set<UserIngredient> userIngredients;
+    @ManyToMany(mappedBy = "ingredients")
+    @JsonIgnore
+    private Set<Post> posts;
 }

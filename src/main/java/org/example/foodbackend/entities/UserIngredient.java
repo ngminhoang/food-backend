@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -24,4 +27,7 @@ public class UserIngredient {
     private Account user;
     @Column
     private int quantity;
+    @Column
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }
