@@ -5,6 +5,7 @@ import org.example.foodbackend.authentication.AuthenticationResponse;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.dto.UserInfoDTO;
+import org.example.foodbackend.entities.dto.UserLanguageDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,4 +27,10 @@ public interface AuthController {
 
     @GetMapping("/user/info")
     ResponseEntity<UserInfoDTO> getUserInfo(@AuthenticationPrincipal Account account);
+
+    @PostMapping("/user/info")
+    ResponseEntity<UserInfoDTO> updateUserInfo(@AuthenticationPrincipal Account account, @RequestBody UserInfoDTO userInfoDTO);
+
+    @PostMapping("user/info/language")
+    ResponseEntity<?> updateUserInfoLanguage(@AuthenticationPrincipal Account account, @RequestBody UserLanguageDTO userLanguageDTO);
 }

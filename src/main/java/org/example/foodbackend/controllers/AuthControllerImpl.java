@@ -5,6 +5,7 @@ import org.example.foodbackend.authentication.AuthenticationResponse;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.dto.UserInfoDTO;
+import org.example.foodbackend.entities.dto.UserLanguageDTO;
 import org.example.foodbackend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -46,4 +47,15 @@ public class AuthControllerImpl implements AuthController {
                 .language(account.getLanguage())
                 .build());
     }
+
+    @Override
+    public ResponseEntity<UserInfoDTO> updateUserInfo(Account account, UserInfoDTO userInfoDTO) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserInfoLanguage(Account account, UserLanguageDTO userLanguageDTO) {
+        return null;
+    }
+
 }

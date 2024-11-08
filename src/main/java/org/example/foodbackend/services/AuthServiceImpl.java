@@ -6,9 +6,13 @@ import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.configuration.JwtService;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.KitchenTool;
+import org.example.foodbackend.entities.dto.UserInfoDTO;
+import org.example.foodbackend.entities.enums.ELanguage;
 import org.example.foodbackend.entities.enums.Erole;
 import org.example.foodbackend.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -55,5 +59,31 @@ public class AuthServiceImpl implements AuthService {
     public List<KitchenTool> getUserInfo(Long userId) {
         Account user = accountRepository.findById(userId).get();
         return user.getTools().stream().toList();
+    }
+
+    @Override
+    public ResponseEntity<UserInfoDTO> updateUserInfo(Long userId, UserInfoDTO userInfoDTO) {
+        try {
+            Account user = accountRepository.findById(userId).get();
+            user.setName(userInfoDTO.getName());
+            user.setMail(userInfoDTO.getMail());
+            user.setAvatar_url(userInfoDTO.getAvatar_url());
+            accountRepository.save(user);
+            return ResponseEntity.ok().body(userInfoDTO);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserLanguage(Long userId, ELanguage language) {
+        try {
+            Account account = accountRepository.findById(userId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            account.setLanguage(language);
+            accountRepository.save(account);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
