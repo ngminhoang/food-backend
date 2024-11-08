@@ -56,6 +56,6 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
     private Set<KitchenIngredient> ingredients;
-    @OneToMany
+    @OneToMany(mappedBy = "post")
     private Set<CookHistory> histories;
 }
