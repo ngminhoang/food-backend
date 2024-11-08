@@ -58,4 +58,11 @@ public class Post {
     private Set<KitchenIngredient> ingredients;
     @OneToMany(mappedBy = "post")
     private Set<CookHistory> histories;
+    @ManyToMany
+    @JoinTable(
+            name = "post_sessions",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "session_id")
+    )
+    private Set<DaySession> daySessions;
 }
