@@ -1,13 +1,17 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.enums.ELanguage;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -21,13 +25,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
+    @JsonProperty("is_standard")
     private boolean is_standard;
     @Column
     private String description;
     @Column
+    @CreationTimestamp
     private LocalDateTime published_time;
-    @Column
-    private int likes;
     @Column
     private ELanguage language;
     @Column
@@ -36,33 +40,43 @@ public class Post {
     private String dish_img_url;
     @Column
     private int duration;
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Account user;
-    @OneToMany(mappedBy = "post")
-    private Set<InstructionStep> steps;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InstructionStep> steps;
     @ManyToMany
     @JoinTable(name = "post_tools",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tool_id"))
-    private Set<KitchenTool> tools;
+    private List<KitchenTool> tools;
     @ManyToMany
     @JoinTable(name = "post_spices",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "spice_id"))
-    private Set<KitchenSpice> spices;
+    private List<KitchenSpice> spices;
     @ManyToMany
     @JoinTable(name = "post_ingredients",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
-    private Set<KitchenIngredient> ingredients;
+    private List<KitchenIngredient> ingredients;
     @OneToMany(mappedBy = "post")
-    private Set<CookHistory> histories;
+    @JsonIgnore
+    private List<CookHistory> histories;
     @ManyToMany
     @JoinTable(
             name = "post_sessions",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "session_id")
     )
-    private Set<DaySession> daySessions;
+    private List<DaySession> daySessions;
+    @ManyToMany
+    @JoinTable(
+            name = "post_likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonIgnore
+    private List<Account> likedUsers;
 }

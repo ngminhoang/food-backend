@@ -1,7 +1,6 @@
 package org.example.foodbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,9 +48,12 @@ public class Account implements UserDetails {
     private List<KitchenSpice> spices;
     @OneToMany(mappedBy = "user")
     private List<UserIngredient> userIngredients;
-    @OneToOne(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private Post post;
+    private Set<Post> posts;
+    @ManyToMany(mappedBy = "likedUsers")
+    @JsonIgnore
+    private Set<Post> likedPosts;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

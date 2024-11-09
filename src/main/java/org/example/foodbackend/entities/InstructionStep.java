@@ -1,5 +1,6 @@
 package org.example.foodbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class InstructionStep {
     @Column(length = 500)
     private String img_url;
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
+    @JsonIgnore
     private Post post;
 }
