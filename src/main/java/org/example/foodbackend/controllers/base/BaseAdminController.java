@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
+public abstract class BaseAdminController<T, ID, S extends BaseService<T, ID>> {
 
     protected final S service;
 
-    public BaseController(S service) {
+    public BaseAdminController(S service) {
         this.service = service;
     }
 

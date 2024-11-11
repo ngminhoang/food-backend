@@ -37,20 +37,15 @@ public class PythonAPI {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    private static final String API_URL_ROOT = "http://localhost:5000/api";
-    private static final String CALCULATE_API = "/data?calo=%f&protein=%f&fat=%f&sat_fat=%f&fiber=%f&carb=%f";
-    private static final String CALCULATE_BY_BODY_API = "/data?weight_kg=%f&height_cm=%f&age=%f&gender=%f&activity_level=%f&moderately_active=%f";
-
     public PythonAPI(){
         client = HttpClient.newHttpClient();
         objectMapper = new ObjectMapper();
 
     }
 
-
     public Parameter calculateByBodyProperties(Double weight, Double height, Integer age, String gender, String activityLevel) {
         try {
-            String apiUrl = String.format(API_URL_ROOT + CALCULATE_BY_BODY_API, weight, height, age, gender, activityLevel);
+            String apiUrl = String.format(APIConstants.API_URL_ROOT + APIConstants.CALCULATE_BY_BODY_API, weight, height, age, gender, activityLevel);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
                     .GET()
@@ -75,7 +70,7 @@ public class PythonAPI {
 
         try {
             // Build the API URL with parameters
-            String apiUrl = String.format(API_URL_ROOT + CALCULATE_API, calories, proteins, fats, satFats, fibers, carbs);
+            String apiUrl = String.format(APIConstants.API_URL_ROOT + APIConstants.CALCULATE_API, calories, proteins, fats, satFats, fibers, carbs);
 
             // Create an HTTP GET request
             HttpRequest request = HttpRequest.newBuilder()

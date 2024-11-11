@@ -27,7 +27,7 @@ public class GoogleUtil {
     protected WebDriver driver;
 
     public GoogleUtil() {
-//        WebDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
     }
 

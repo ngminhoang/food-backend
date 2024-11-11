@@ -22,7 +22,7 @@ public class ScheduleService {
     IngredientRepository ingredientRepository;
 
     // Runs daily at midnight using cron expression
-    @Scheduled(fixedDelay = 1)
+//    @Scheduled(fixedDelay = 1)
     public void scheduleDailySearch() {
 
 
