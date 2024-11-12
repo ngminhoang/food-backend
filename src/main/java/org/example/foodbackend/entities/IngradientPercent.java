@@ -5,9 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.foodbackend.entities.dto.FlaskResponseDTO;
-
-import java.util.List;
 
 @Data
 @Entity
@@ -25,9 +22,9 @@ public class IngradientPercent {
 
     @ManyToOne
     @JoinColumn(name = "ingredient_id")
-    private Ingradient ingredient;  // This will hold the associated ingredient
+    private Ingredient ingredient;  // This will hold the associated ingredient
 
-    public IngradientPercent(Double percent, Ingradient ingredient) {
+    public IngradientPercent(Double percent, Ingredient ingredient) {
         this.percent = percent;
         this.ingredient = ingredient;
     }

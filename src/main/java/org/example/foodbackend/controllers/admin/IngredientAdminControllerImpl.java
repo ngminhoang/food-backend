@@ -1,18 +1,18 @@
 package org.example.foodbackend.controllers.admin;
 
 import org.example.foodbackend.controllers.base.BaseAdminController;
-import org.example.foodbackend.entities.Ingradient;
-import org.example.foodbackend.entities.dto.IngradientResponseDTO;
+import org.example.foodbackend.controllers.mapper.IngredientMapper;
+import org.example.foodbackend.entities.Ingredient;
+import org.example.foodbackend.entities.dto.IngredientResponseDTO;
+import org.example.foodbackend.entities.dto.IngredientRequestDTO;
 import org.example.foodbackend.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @RestController
-public class IngredientAdminControllerImpl extends BaseAdminController<Ingradient, Long, IngredientService> implements IngredientAdminController {
+public class IngredientAdminControllerImpl extends BaseAdminController<Ingredient, Long, IngredientService, IngredientRequestDTO, IngredientResponseDTO> implements IngredientAdminController {
     @Autowired
-    public IngredientAdminControllerImpl(IngredientService service) {
-        super(service);
+    public IngredientAdminControllerImpl(IngredientService service, IngredientMapper mapper) {
+        super(service, mapper);
     }
 }

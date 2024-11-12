@@ -1,11 +1,10 @@
 package org.example.foodbackend.entities.dto;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.foodbackend.entities.Ingradient;
+import org.example.foodbackend.entities.Ingredient;
 
 @Data
 @Builder
@@ -22,14 +21,14 @@ public class MeilisearchIngredient {
     private Double fiber;
     private Double carb;   // Carbohydrates
 
-    public MeilisearchIngredient(Ingradient ingradient) {
-        this.calo = ingradient.getNuCalories();
-        this.name = ingradient.getName();
-        this.id = ingradient.getId();
-        this.protein = ingradient.getNuProteins();
-        this.fat = ingradient.getNuFats();
-        this.fiber = ingradient.getNuFibers();
-        this.carb = ingradient.getNuCarbs();
-        this.satFat = ingradient.getNuSatFats();
+    public MeilisearchIngredient(Ingredient ingredient) {
+        this.calo = ingredient.getNuCalories();
+        this.name = ingredient.getName();
+        this.id = ingredient.getId();
+        this.protein = ingredient.getNuProteins();
+        this.fat = ingredient.getNuFats();
+        this.fiber = ingredient.getNuFibers();
+        this.carb = ingredient.getNuCarbs();
+        this.satFat = ingredient.getNuSatFats();
     }
 }

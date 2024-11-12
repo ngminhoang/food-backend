@@ -1,6 +1,6 @@
 package org.example.foodbackend.controllers;
 
-import org.example.foodbackend.entities.dto.IngradientResponseDTO;
+import org.example.foodbackend.entities.dto.IngredientResponseDTO;
 import org.example.foodbackend.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,13 @@ public class IngredientControllerImpl implements IngredientController {
     IngredientService service;
 
     @Override
-    public ResponseEntity<List<IngradientResponseDTO>> getList() {
+    public ResponseEntity<List<IngredientResponseDTO>> getList() {
         return null;
     }
 
     @Override
-    public ResponseEntity<List<IngradientResponseDTO>> search(String keyword, int page, int size, String sort, String order) {
-        return ResponseEntity.ok(service.search(keyword, page, size, sort, order).getBody().stream().map(IngradientResponseDTO::new).toList());
+    public ResponseEntity<List<IngredientResponseDTO>> search(String keyword, int page, int size, String sort, String order) {
+        return ResponseEntity.ok(service.search(keyword, page, size, sort, order).getBody().stream().map(IngredientResponseDTO::new).toList());
     }
 
     @Override

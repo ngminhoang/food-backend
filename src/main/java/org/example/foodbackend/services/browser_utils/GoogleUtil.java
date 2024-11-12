@@ -2,7 +2,7 @@ package org.example.foodbackend.services.browser_utils;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
-import org.example.foodbackend.entities.Ingradient;
+import org.example.foodbackend.entities.Ingredient;
 import org.example.foodbackend.repositories.IngredientRepository;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -34,11 +34,11 @@ public class GoogleUtil {
     public void performDailySearch() {
         try {
             Pageable pageable = PageRequest.of(0, 50);
-            List<Ingradient> ingradientList = ingredientRepository.findAllWhereNoImg(pageable);
+            List<Ingredient> ingredientList = ingredientRepository.findAllWhereNoImg(pageable);
 
-            for (Ingradient ingradient : ingradientList) {
+            for (Ingredient ingredient : ingredientList) {
                 // Điều hướng đến Google Image Search cho tên của ingredient
-                driver.get("https://www.google.com/search?udm=2&q=" + ingradient.getName() + "&tbm=isch");
+                driver.get("https://www.google.com/search?udm=2&q=" + ingredient.getName() + "&tbm=isch");
 
                 // Đợi cho các hình ảnh được load
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));

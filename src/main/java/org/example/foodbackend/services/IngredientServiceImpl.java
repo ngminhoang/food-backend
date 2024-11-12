@@ -1,7 +1,7 @@
 package org.example.foodbackend.services;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.foodbackend.entities.Ingradient;
+import org.example.foodbackend.entities.Ingredient;
 import org.example.foodbackend.entities.dto.MeilisearchIngredient;
 import org.example.foodbackend.entities.enums.SearchStatus;
 import org.example.foodbackend.repositories.IngredientRepository;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class IngredientServiceImpl extends BaseServiceImpl<Ingradient, Long, IngredientRepository> implements IngredientService {
+public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, IngredientRepository> implements IngredientService {
 
     public IngredientServiceImpl(IngredientRepository repository) {
         super(repository);
@@ -33,26 +33,26 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingradient, Long, Ing
         PageRequest pageRequest = PageRequest.of(0, 50);
 
         // Get the page with the specified number of results
-        List<Ingradient> ingradients = rootRepository.findBySearchStatus(SearchStatus.PENDING, pageRequest);
+        List<Ingredient> ingredients = rootRepository.findBySearchStatus(SearchStatus.PENDING, pageRequest);
 
-        log.error("pending ingredients: " + String.valueOf(ingradients.size()));
+        log.error("pending ingredients: " + String.valueOf(ingredients.size()));
 
 //        List<MeilisearchIngredient> meilisearchIngredients = ingradients.stream().map(MeilisearchIngredient::new).toList();
-        for (Ingradient ingradient : ingradients) {
+        for (Ingredient ingredient : ingredients) {
             try {
-                ingradient.setSearchStatus(SearchStatus.SUCCESS);
-                MeilisearchIngredient meilisearchIngredient = new MeilisearchIngredient(ingradient);
+                ingredient.setSearchStatus(SearchStatus.SUCCESS);
+                MeilisearchIngredient meilisearchIngredient = new MeilisearchIngredient(ingredient);
                 meilisearchRepository.insertIngredient(meilisearchIngredient);
             } catch (Exception e) {
-                ingradient.setSearchStatus(SearchStatus.FAIL);
+                ingredient.setSearchStatus(SearchStatus.FAIL);
             } finally {
-                rootRepository.save(ingradient);
+                rootRepository.save(ingredient);
             }
         }
     }
 
     @Override
-    public ResponseEntity<List<Ingradient>> search(String query, int page, int size,String sort, String order) {
+    public ResponseEntity<List<Ingredient>> search(String query, int page, int size, String sort, String order) {
         List<Long> ids = meilisearchRepository.searchIngredients(query, page, size, sort, order);
         return ResponseEntity.ok(rootRepository.findByIdIn(ids));
 

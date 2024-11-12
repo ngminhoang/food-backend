@@ -16,7 +16,7 @@ public class CategoryResponseDTO {
     public CategoryResponseDTO(Category category) {
         this.id = category.getId();
         this.name = category.getName();
-        this.ingradientNames = category.getIngradients().stream()
+        this.ingradientNames = category.getIngredients().stream()
                 .map(ingradient -> ingradient.getName())
                 .collect(Collectors.toList());
     }
