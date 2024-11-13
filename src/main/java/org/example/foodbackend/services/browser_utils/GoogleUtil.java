@@ -13,9 +13,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.Base64;
 
 @Slf4j
 @Service
@@ -25,10 +30,39 @@ public class GoogleUtil {
     IngredientRepository ingredientRepository;
 
     protected WebDriver driver;
+    private static final String IMAGE_DIRECTORY = "db_data/images/igredient/";
 
     public GoogleUtil() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
+    }
+
+    public String saveBase64Image(String base64Image) throws IOException {
+        // Ensure the directory exists
+        File directory = new File(IMAGE_DIRECTORY);
+        if (!directory.exists()) {
+            // Create the directory if it does not exist
+            directory.mkdirs();
+        }
+
+        // Check if the Base64 string contains a MIME type prefix (e.g., "data:image/png;base64,")
+        String base64Data = base64Image.contains(",") ? base64Image.split(",")[1] : base64Image;
+
+        // Generate a unique file name with .png extension
+        String fileName = UUID.randomUUID().toString() + ".png";
+        String filePath = IMAGE_DIRECTORY + fileName;
+
+        // Decode the Base64 image string
+        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+
+        // Save the image to the specified path
+        File imageFile = new File(filePath);
+        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
+            fos.write(imageBytes);
+        }
+
+        // Return the relative path of the saved image
+        return "/images/igredient/" + fileName;
     }
 
     public void performDailySearch() {
@@ -53,7 +87,7 @@ public class GoogleUtil {
                     if (count >= 3) break;
 
                     String imgUrl = imgElement.getAttribute("src");
-                    imageUrls.add(imgUrl);
+                    imageUrls.add(saveBase64Image(imgUrl));
                     count++;
 //                    if (imgUrl == null || imgUrl.isEmpty()) {
 //                        imgUrl = imgElement.getAttribute("data-src");
@@ -65,13 +99,17 @@ public class GoogleUtil {
 //                    }
                 }
 
+                ingredient.setImgPaths(imageUrls);
+                Ingredient x = ingredientRepository.save(ingredient);
                 // In ra các URL hoặc lưu vào database theo nhu cầu của bạn
-                for (String url : imageUrls) {
+                for (String url : x.getImgPaths()) {
                     System.out.println("Image URL: " + url);
+//                    String img = saveBase64Image(url);
                     // Lưu URL vào cơ sở dữ liệu nếu cần thiết, ví dụ:
-                    // ingradientRepository.updateImageUrl(ingradient.getId(), url);
+//                     ingredientRepository.updateImageUrl(ingradient.getId(), url);
                 }
             }
+//            ingredientRepository.saveAll(ingredientList);
 
         } catch (Exception e) {
             log.error("Error performing daily search", e);
