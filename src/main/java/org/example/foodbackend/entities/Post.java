@@ -56,11 +56,9 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "spice_id"))
     private List<KitchenSpice> spices;
-    @ManyToMany
-    @JoinTable(name = "post_ingredients",
-            joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "ingredient_id"))
-    private List<KitchenIngredient> ingredients;
+    @OneToMany(mappedBy = "post")
+    @JsonIgnore
+    private List<PostIngredient> post_ingredients;
     @OneToMany(mappedBy = "post")
     @JsonIgnore
     private List<CookHistory> histories;

@@ -8,7 +8,6 @@ import org.example.foodbackend.entities.*;
 import org.example.foodbackend.entities.enums.ELanguage;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -21,8 +20,8 @@ public class PostRequestDTO {
     private String dish_img_url;
     private Integer duration;
     private List<DaySession> sessions;
-    private List<KitchenTool> tools;
-    private List<KitchenSpice> spices;
-    private List<KitchenIngredient> ingredients;
+    private List<Long> tools;
+    private List<Long> spices;
+    private List<KitchenIngredientRequestDTO> ingredients;
     private List<InstructionStep> steps;
 }

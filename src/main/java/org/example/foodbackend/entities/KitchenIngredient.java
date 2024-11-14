@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.foodbackend.entities.enums.EUnit;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -31,7 +32,6 @@ public class KitchenIngredient {
     @OneToMany(mappedBy = "ingredient")
     @JsonIgnore
     private Set<UserIngredient> userIngredients;
-    @ManyToMany(mappedBy = "ingredients")
-    @JsonIgnore
-    private Set<Post> posts;
+    @OneToMany(mappedBy = "ingredient")
+    private List<PostIngredient> postIngredients;
 }
