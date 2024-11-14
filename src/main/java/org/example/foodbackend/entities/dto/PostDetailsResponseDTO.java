@@ -1,5 +1,6 @@
 package org.example.foodbackend.entities.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,9 @@ public class PostDetailsResponseDTO {
     private LocalDateTime published_time;
     private UserInfoDTO user;
     private List<KitchenTool> tools;
-    private List<KitchenIngredient> ingredients;
+    private List<KitchenIngredientPostDTO> ingredients;
     private List<KitchenSpice> spices;
+    private int likes;
+    @JsonProperty("is_liked")
+    private boolean is_liked;
 }
