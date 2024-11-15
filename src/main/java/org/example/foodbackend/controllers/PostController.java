@@ -5,6 +5,7 @@ import org.example.foodbackend.controllers.base.BaseController;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.Post;
 import org.example.foodbackend.entities.dto.KitchenIngredientPostDTO;
+import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
 import org.example.foodbackend.entities.dto.PostDetailsResponseDTO;
 import org.example.foodbackend.entities.dto.PostRequestDTO;
 import org.example.foodbackend.services.PostService;
@@ -28,8 +29,8 @@ public class PostController extends BaseController<Post, Long, PostService> {
     }
 
     @GetMapping("/post/recent")
-    public List<PostDetailsResponseDTO> getRecentPosts(@AuthenticationPrincipal Account user) {
-        return service.getAllRecentPost(user);
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecentPosts(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
+        return service.getAllRecentPost(user, page, size);
     }
 
     @GetMapping("post/recommend")
@@ -40,6 +41,11 @@ public class PostController extends BaseController<Post, Long, PostService> {
     @PostMapping("post/like/{id}")
     public ResponseEntity<?> likePost(@AuthenticationPrincipal Account user, @PathVariable Long id) {
         return service.likePost(user, id);
+    }
+
+    @GetMapping("post/liked/list")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getLikedPosts(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
+        return service.getListPostsLiked(user, page, size);
     }
 
 }

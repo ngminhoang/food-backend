@@ -1,8 +1,8 @@
 package org.example.foodbackend.repositories;
 
 import org.example.foodbackend.entities.Account;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.jpa.repository.EntityGraph;
+import org.example.foodbackend.entities.Post;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

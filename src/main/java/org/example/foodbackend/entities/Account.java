@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Entity
@@ -51,10 +50,10 @@ public class Account implements UserDetails {
     private List<UserIngredient> userIngredients;
     @OneToMany(mappedBy = "user")
     @JsonIgnore
-    private Set<Post> posts;
+    private List<Post> posts;
     @ManyToMany(mappedBy = "likedUsers")
     @JsonIgnore
-    private Set<Post> likedPosts;
+    private List<Post> likedPosts;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

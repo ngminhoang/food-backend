@@ -8,6 +8,9 @@ import org.example.foodbackend.services.base.BaseService;
 import org.example.foodbackend.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -87,8 +90,9 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         }
     }
 
-    private List<PostDetailsResponseDTO> convertToPostDetailDTO(Account user, List<Post> posts) {
-        return posts.stream().map(post -> {
+    private PaginatedResponseDTO<PostDetailsResponseDTO> convertToPostDetailDTO(Account user, Page<Post> postsPage) {
+        List<Post> posts = postsPage.getContent();
+        List<PostDetailsResponseDTO> dtoList = posts.stream().map(post -> {
             UserInfoDTO userInfoDTO = UserInfoDTO.builder()
                     .id(post.getUser().getId())
                     .mail(post.getUser().getMail())
@@ -126,10 +130,17 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .is_liked(isLiked)
                     .build();
         }).toList();
+        return PaginatedResponseDTO.<PostDetailsResponseDTO>builder()
+                .data(dtoList)
+                .totalPages(postsPage.getTotalPages())
+                .totalItems(postsPage.getTotalElements())
+                .currentPage(postsPage.getNumber())
+                .build();
     }
 
-    public List<PostDetailsResponseDTO> getAllRecentPost(Account user) {
-        return convertToPostDetailDTO(user, rootRepository.findAllByOrderByPublishedTimeDesc());
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getAllRecentPost(Account user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return convertToPostDetailDTO(user, rootRepository.findAllByOrderByPublishedTimeDesc(pageable));
     }
 
     public List<PostDetailsResponseDTO> getAllRecommendPosts(Account user) {
@@ -152,9 +163,9 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         }
     }
 
-    public ResponseEntity<PostDetailsResponseDTO> getListPostsLiked(Account user) {
-        try {
-            
-        }
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getListPostsLiked(Account user, int page, int size) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(page, size);
+        return convertToPostDetailDTO(userFound, rootRepository.findAllLikedPostsByUserId(user.getId(), user.getLanguage(), pageable));
     }
 }
