@@ -48,4 +48,8 @@ public class PostController extends BaseController<Post, Long, PostService> {
         return service.getListPostsLiked(user, page, size);
     }
 
+    @GetMapping("post/posted/list")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getUserPostedPosts(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
+        return service.getUsersPostedPosts(user, page, size);
+    }
 }

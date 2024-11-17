@@ -55,6 +55,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .dish_img_url(postRequestDTO.getDish_img_url())
                     .description(postRequestDTO.getDescription())
                     .language(postRequestDTO.getLanguage())
+                    .duration(postRequestDTO.getDuration())
                     .daySessions(postRequestDTO.getSessions())
                     .user(account)
                     .tools(listTools)
@@ -167,5 +168,11 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(page, size);
         return convertToPostDetailDTO(userFound, rootRepository.findAllLikedPostsByUserId(user.getId(), user.getLanguage(), pageable));
+    }
+
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getUsersPostedPosts(Account user, int page, int size) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(page, size);
+        return convertToPostDetailDTO(userFound, rootRepository.getPostedPost(user.getId(), pageable));
     }
 }
