@@ -1,7 +1,7 @@
-package org.example.foodbackend.controllers.admin;
+package org.example.foodbackend.controllers.api.admin_api;
 
-import org.example.foodbackend.controllers.base.BaseAdminController;
-import org.example.foodbackend.controllers.mapper.RecipeMapper;
+import org.example.foodbackend.controllers.api.base.BaseAdminController;
+import org.example.foodbackend.controllers.api.mapper.RecipeMapper;
 import org.example.foodbackend.entities.Recipe;
 import org.example.foodbackend.entities.dto.RecipeRequestDTO;
 import org.example.foodbackend.entities.dto.RecipeResponseDTO;

@@ -1,4 +1,4 @@
-package org.example.foodbackend.controllers.mapper;
+package org.example.foodbackend.controllers.api.mapper;
 
 import org.example.foodbackend.entities.IngradientPercent;
 import org.example.foodbackend.entities.dto.IngradientPercentResponseDTO;

@@ -1,6 +1,5 @@
-package org.example.foodbackend.controllers;
+package org.example.foodbackend.controllers.api.public_api;
 
-import org.example.foodbackend.controllers.base.BaseAdminController;
 import org.example.foodbackend.entities.Parameter;
 import org.example.foodbackend.entities.dto.ParameterResponseDTO;
 import org.example.foodbackend.services.ParameterService;

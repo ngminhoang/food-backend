@@ -1,4 +1,4 @@
-package org.example.foodbackend.controllers.mapper;
+package org.example.foodbackend.controllers.api.mapper;
 
 import org.example.foodbackend.entities.Parameter;
 import org.example.foodbackend.entities.dto.ParameterRequestDTO;

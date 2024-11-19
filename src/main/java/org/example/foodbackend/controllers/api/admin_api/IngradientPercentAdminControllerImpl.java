@@ -1,7 +1,7 @@
-package org.example.foodbackend.controllers.admin;
+package org.example.foodbackend.controllers.api.admin_api;
 
-import org.example.foodbackend.controllers.base.BaseAdminController;
-import org.example.foodbackend.controllers.mapper.IngredientPercentMapper;
+import org.example.foodbackend.controllers.api.base.BaseAdminController;
+import org.example.foodbackend.controllers.api.mapper.IngredientPercentMapper;
 import org.example.foodbackend.entities.IngradientPercent;
 import org.example.foodbackend.entities.dto.IngradientPercentResponseDTO;
 import org.example.foodbackend.entities.dto.IngredientPercentRequestDTO;

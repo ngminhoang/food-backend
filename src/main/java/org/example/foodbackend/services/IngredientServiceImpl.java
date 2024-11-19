@@ -8,7 +8,9 @@ import org.example.foodbackend.repositories.IngredientRepository;
 import org.example.foodbackend.repositories.MeilisearchRepository;
 import org.example.foodbackend.services.base.BaseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -62,5 +64,17 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, Ing
     public ResponseEntity<List<String>> suggestion(String query) {
         List<String> names = meilisearchRepository.suggestIngredients(query);
         return ResponseEntity.ok(names);
+    }
+
+    @Override
+    public Page<Ingredient> findIngredients(String search, Boolean isVerified, int page, int size) {
+        if(isVerified==null){
+            isVerified= false;
+        }
+        if(search==null){
+            search = "";
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        return rootRepository.findIngredients(search, isVerified, pageable);
     }
 }

@@ -33,6 +33,7 @@ public class Ingredient {
     private Double nuFats;
     private Double nuSatFats;
     private Double nuPrice;
+    private Boolean isVerified = false;
     private SearchStatus searchStatus = SearchStatus.PENDING;
 
     @ElementCollection

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${ingredient.id == null ? 'Create Ingredient' : 'Edit Ingredient'}"></title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        /* Form Container */
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Headings */
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Form Labels */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        /* Form Inputs */
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Cancel Link */
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            color: #007BFF;
+            text-decoration: underline;
+        }
+
+        /* Image Display */
+        div[style="display: flex"] {
+            margin-top: 15px;
+            justify-content: start;
+            flex-wrap: wrap;
+        }
+
+        div[style="margin-right:10px"] img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        div[style="margin-right:10px"] img:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="${ingredient.id == null ? 'Create New Ingredient' : 'Edit Ingredient'}"></h1>
+
+<!-- Main Form -->
+<form th:action="@{/ingredients/save}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}">
+
+    <label>Name:</label>
+    <input type="text" th:field="*{name}" required><br>
+
+    <label>Grams:</label>
+    <input type="number" th:field="*{nuGrams}" step="0.01"><br>
+
+    <label>Calories:</label>
+    <input type="number" th:field="*{nuCalories}" step="0.01"><br>
+
+    <label>Proteins:</label>
+    <input type="number" th:field="*{nuProteins}" step="0.01"><br>
+
+    <label>Carbs:</label>
+    <input type="number" th:field="*{nuCarbs}" step="0.01"><br>
+
+    <label>Fibers:</label>
+    <input type="number" th:field="*{nuFibers}" step="0.01"><br>
+
+    <label>Fats:</label>
+    <input type="number" th:field="*{nuFats}" step="0.01"><br>
+
+    <label>SatFats:</label>
+    <input type="number" th:field="*{nuSatFats}" step="0.01"><br>
+
+    <label>Price:</label>
+    <input type="number" th:field="*{nuPrice}" step="0.01"><br>
+
+    <!-- Image List -->
+    <div style="display: flex; flex-wrap: wrap;">
+        <div th:each="imgPath : *{imgPaths}" style="margin-bottom: 20px; margin-right: 20px; position: relative;">
+
+            <!-- Image deletion form -->
+            <form action="/image-delete" method="post">
+                <img th:src="'http://localhost:8080' + ${imgPath}" width="180px" height="180px" alt="Uploaded Image" />
+
+                <input type="hidden" name="imgPath" th:value="${imgPath}" />
+                <input type="hidden" name="ingredientId" th:value="${ingredient.id}" />
+
+                <!-- Delete Button -->
+                <button type="submit" style="position: absolute; top: 0; right: 0; background-color: red; color: white; border: none; cursor: pointer;">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Upload Form -->
+    <form id="imageUploadForm" th:action="@{/upload-image}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}">
+        <label>Add Image:</label>
+        <input type="file" name="image" required>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <button type="submit">Save</button>
+</form>
+
+<a th:href="@{/ingredient-management}">Cancel</a>
+
+<script>
+    // Redirect back to the current page after image upload
+    document.getElementById('imageUploadForm').onsubmit = function (event) {
+        const form = event.target;
+        const action = form.getAttribute('action');
+
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        fetch(action, {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the page to display the new image
+                    window.location.reload();
+                } else {
+                    alert('Failed to upload the image.');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading the image:', error);
+                alert('An error occurred while uploading the image.');
+            });
+    };
+</script>
+</body>
+</html>

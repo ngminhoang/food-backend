@@ -1,4 +1,4 @@
-package org.example.foodbackend.controllers;
+package org.example.foodbackend.controllers.api.public_api;
 
 import org.example.foodbackend.authentication.AuthenticationRequest;
 import org.example.foodbackend.authentication.AuthenticationResponse;

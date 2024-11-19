@@ -1,6 +1,6 @@
-package org.example.foodbackend.controllers.base;
+package org.example.foodbackend.controllers.api.base;
 
-import org.example.foodbackend.controllers.mapper.Mapper;
+import org.example.foodbackend.controllers.api.mapper.Mapper;
 import org.example.foodbackend.services.base.BaseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

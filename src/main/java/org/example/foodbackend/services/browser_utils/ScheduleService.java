@@ -17,7 +17,7 @@ public class ScheduleService {
     IngredientRepository ingredientRepository;
 
     // Runs daily at midnight using cron expression
-    @Scheduled(fixedDelay = 5)
+//    @Scheduled(fixedDelay = 5)
     public void scheduleDailySearch() {
 
 

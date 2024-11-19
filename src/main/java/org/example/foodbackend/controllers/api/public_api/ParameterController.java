@@ -1,4 +1,4 @@
-package org.example.foodbackend.controllers;
+package org.example.foodbackend.controllers.api.public_api;
 
 import org.example.foodbackend.entities.dto.ParameterResponseDTO;
 import org.springframework.http.ResponseEntity;
