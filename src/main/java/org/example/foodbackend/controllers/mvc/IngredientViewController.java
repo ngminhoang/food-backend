@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,12 +57,50 @@ public class IngredientViewController {
         return "ingredient-form";
     }
 
+    @GetMapping("/ingredient-create")
+    public String showIngredientCreate(Model model) {
+        return "ingredient-create";
+    }
+
     // Lưu ingredient
+    private void updateNullFields(Object target, Object source) {
+        if (target == null || source == null) return;
+
+        Class<?> clazz = target.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            field.setAccessible(true); // Đảm bảo có thể truy cập vào cả các field private
+            try {
+                Object targetValue = field.get(target);
+                if (targetValue == null) {
+                    Object sourceValue = field.get(source);
+                    field.set(target, sourceValue);
+                }
+            } catch (IllegalAccessException e) {
+                // Xử lý lỗi nếu xảy ra
+                e.printStackTrace();
+            }
+        }
+    }
     @PostMapping("/save")
     public String saveIngredient(@ModelAttribute("ingredient") Ingredient ingredient) {
+        Ingredient isExisted = ingredientService.findById(ingredient.getId());
+        if(isExisted!=null){
+            updateNullFields(ingredient, isExisted);
+        }
         ingredientService.save(ingredient);
         return "redirect:/ingredient-management";
     }
+
+    @PostMapping("/init")
+    public String saveIngredient(@ModelAttribute("ingredient") Ingredient ingredient, RedirectAttributes redirectAttributes) {
+        ingredientService.save(ingredient);
+
+        // Redirect with the ID of the newly saved ingredient
+        return "redirect:/ingredient-form?id=" + ingredient.getId();
+    }
+
 
     // Xóa ingredient
     @PostMapping("/delete/{id}")

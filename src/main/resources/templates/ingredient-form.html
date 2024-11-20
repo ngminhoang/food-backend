@@ -106,7 +106,40 @@
 <h1 th:text="${ingredient.id == null ? 'Create New Ingredient' : 'Edit Ingredient'}"></h1>
 
 <!-- Main Form -->
-<form th:action="@{/ingredients/save}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
+<a th:href="@{/ingredient-management}" style="margin: 5px">Cancel / Back</a>
+
+<div style="display: flex; flex-wrap: wrap;max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+    <div th:each="imgPath : ${ingredient.getImgPaths()}" style="margin-bottom: 20px; margin-right: 20px; position: relative;">
+
+        <!-- Image deletion form -->
+        <form action="/image-delete" method="post">
+            <img th:src="'http://localhost:8080' + ${imgPath}" width="180px" height="180px" alt="Uploaded Image" />
+
+            <input type="hidden" name="imgPath" th:value="${imgPath}" />
+            <input type="hidden" name="ingredientId" th:value="${ingredient.id}" />
+
+            <!-- Delete Button -->
+            <button type="submit" style="position: absolute; top: 0; right: 0; background-color: red; color: white; border: none; cursor: pointer;">
+                Delete
+            </button>
+        </form>
+    </div>
+</div>
+<form id="imageUploadForm" th:action="@{/upload-image}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}">
+    <label>Add Image:</label>
+    <input type="file" name="image" required>
+    <button type="submit">Upload Image</button>
+</form>
+
+<form th:action="@{/save}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
+    <button type="submit">Save Info</button>
     <input type="hidden" th:field="*{id}">
 
     <label>Name:</label>
@@ -136,37 +169,7 @@
     <label>Price:</label>
     <input type="number" th:field="*{nuPrice}" step="0.01"><br>
 
-    <!-- Image List -->
-    <div style="display: flex; flex-wrap: wrap;">
-        <div th:each="imgPath : *{imgPaths}" style="margin-bottom: 20px; margin-right: 20px; position: relative;">
-
-            <!-- Image deletion form -->
-            <form action="/image-delete" method="post">
-                <img th:src="'http://localhost:8080' + ${imgPath}" width="180px" height="180px" alt="Uploaded Image" />
-
-                <input type="hidden" name="imgPath" th:value="${imgPath}" />
-                <input type="hidden" name="ingredientId" th:value="${ingredient.id}" />
-
-                <!-- Delete Button -->
-                <button type="submit" style="position: absolute; top: 0; right: 0; background-color: red; color: white; border: none; cursor: pointer;">
-                    Delete
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Image Upload Form -->
-    <form id="imageUploadForm" th:action="@{/upload-image}" th:object="${ingredient}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:field="*{id}">
-        <label>Add Image:</label>
-        <input type="file" name="image" required>
-        <button type="submit">Upload Image</button>
-    </form>
-
-    <button type="submit">Save</button>
 </form>
-
-<a th:href="@{/ingredient-management}">Cancel</a>
 
 <script>
     // Redirect back to the current page after image upload

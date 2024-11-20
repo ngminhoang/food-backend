@@ -71,10 +71,11 @@
         <option th:value="false" th:selected="${isVerified == false}">Unverified</option>
     </select>
     <button type="submit">Search</button>
+    <button><a th:href="@{/ingredient-create}">Create New Ingredient</a></button>
 </form>
 
 <!-- Create New -->
-<a th:href="@{/form}">Create New Ingredient</a>
+
 
 <div class="pagination">
     <a th:if="${currentPage > 0}" th:href="@{/ingredient-management(page=${currentPage - 1}, search=${search}, isVerified=${isVerified})}" class="prev">Previous</a>
@@ -135,7 +136,7 @@
             </div>
         </td>
         <td>
-            <a th:href="@{/ingredient-form(id=${ingredient.id})}">Edit</a>
+             <button><a th:href="@{/ingredient-form(id=${ingredient.id})}">Edit</a></button>
 
             <form th:action="@{/delete/{id}(id=${ingredient.id})}" method="post" style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE">
