@@ -2,10 +2,7 @@ package org.example.foodbackend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.foodbackend.entities.enums.SearchStatus;
 
 import java.util.List;
@@ -41,8 +38,8 @@ public class Ingredient {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @JsonIgnore
-    private Category category;  // This will include only the Category object without its ingredients
+
+    private Category category;
 
     @ManyToMany
     @JoinTable(
@@ -51,6 +48,15 @@ public class Ingredient {
             inverseJoinColumns = @JoinColumn(name = "percent_id")
     )
     @JsonIgnore
+    @ToString.Exclude
     private List<IngradientPercent> ingredientPercents;  // This will be ignored in the JSON response
 
+    @Override
+    public String toString() {
+        return "Ingredient{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", nuPrice=" + nuPrice +
+                '}'; // Avoid printing the whole category
+    }
 }

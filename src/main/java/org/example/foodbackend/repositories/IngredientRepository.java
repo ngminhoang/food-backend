@@ -19,8 +19,12 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     @Query("SELECT i FROM Ingredient i WHERE SIZE(i.imgPaths) = 0")
     List<Ingredient> findAllWhereNoImg(Pageable pageable);
 
-    @Query("SELECT i FROM Ingredient i")
-    Page<Ingredient> findIngredients(@Param("search") String search,
-                                     @Param("isVerified") Boolean isVerified,
-                                     Pageable pageable);
+    @Query("SELECT i FROM Ingredient i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) AND i.isVerified = :isVerified")
+    Page<Ingredient> findIngredientsBySearchAndIsVerified(@Param("search") String search,
+                                                          @Param("isVerified") Boolean isVerified,
+                                                          Pageable pageable);
+
+    @Query("SELECT i FROM Ingredient i WHERE LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+    Page<Ingredient> findIngredientsBySearch(@Param("search") String search, Pageable pageable);
+
 }

@@ -169,6 +169,16 @@
     <label>Price:</label>
     <input type="number" th:field="*{nuPrice}" step="0.01"><br>
 
+    <label>Category:</label>
+    <select th:field="*{category}" required>
+        <option th:each="category : ${categories}"
+                th:value="${category.id}"
+                th:text="${category.name}"
+                th:selected="${ingredient?.getCategory()?.getId() != null and ingredient.getCategory().getId() == category.getId()}">
+            Select Category
+        </option>
+    </select>
+
 </form>
 
 <script>

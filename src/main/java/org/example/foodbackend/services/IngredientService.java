@@ -12,5 +12,5 @@ public interface IngredientService extends BaseService<Ingredient, Long> {
     ResponseEntity<List<Ingredient>> search(String query, int page, int size, String sort, String order);
     ResponseEntity<List<String>> suggestion(String query);
     Page<Ingredient> findIngredients(String search, Boolean isVerified, int page, int size);
-
+    void changeVerifiedStatus(Long id);
 }

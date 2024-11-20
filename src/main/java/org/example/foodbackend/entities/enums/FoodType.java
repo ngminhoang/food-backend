@@ -31,4 +31,7 @@ public enum FoodType {
                 .map(FoodType::name)
                 .toList();
     }
+    public int getValue() {
+        return value;
+    }
 }

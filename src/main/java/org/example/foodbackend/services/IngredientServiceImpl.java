@@ -68,13 +68,24 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, Ing
 
     @Override
     public Page<Ingredient> findIngredients(String search, Boolean isVerified, int page, int size) {
-        if(isVerified==null){
-            isVerified= false;
-        }
+        Pageable pageable = PageRequest.of(page, size);
         if(search==null){
             search = "";
         }
-        Pageable pageable = PageRequest.of(page, size);
-        return rootRepository.findIngredients(search, isVerified, pageable);
+        if(isVerified==null){
+            return rootRepository.findIngredientsBySearch(search, pageable);
+        }
+        else{
+            return rootRepository.findIngredientsBySearchAndIsVerified(search, isVerified, pageable);
+        }
+
+
+    }
+
+    @Override
+    public void changeVerifiedStatus(Long id) {
+        Ingredient ingredient = rootRepository.findById(id).get();
+        ingredient.setIsVerified(!ingredient.getIsVerified());
+        rootRepository.save(ingredient);
     }
 }

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${'Create Category'}"></title>
+    <style>
+        /* General Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        /* Form Container */
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Headings */
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Form Labels */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        /* Form Inputs */
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input::placeholder {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Cancel Link */
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            color: #007BFF;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1 th:text="'Create New Category'"></h1>
+
+<!-- Navigation Link -->
+<a th:href="@{/category-management}" style="margin: 5px">Cancel / Back</a>
+
+<!-- Main Form -->
+<form id="categoryForm" th:action="@{/init-category}" method="post" enctype="multipart/form-data">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter category name" required>
+
+    <label>Category Type:</label>
+    <select id="type" name="type">
+        <option value="" disabled>Select Type</option>
+        <option th:each="type : ${typeList}"
+                th:value="${type}"
+                th:text="${type}">
+        </option>
+    </select>
+
+    <button type="submit">Save Info</button>
+</form>
+
+<script>
+    document.getElementById('categoryForm').onsubmit = function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = event.target;
+        const action = form.getAttribute('action');
+        const formData = new FormData(form);
+
+        fetch(action, {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (response.redirected) {
+                    // Redirect to the URL returned by the server
+                    window.location.href = response.url;
+                } else {
+                    return response.text().then(text => {
+                        alert('Error: ' + text);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the category.');
+            });
+    };
+</script>
+
+</body>
+</html>

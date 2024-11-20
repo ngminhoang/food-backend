@@ -25,10 +25,19 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING) // Save as strings in the database
+    @Column(name = "type", nullable = false)
     private FoodType type;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JsonIgnore
     private List<Ingredient> ingredients;  // This will be ignored in the JSON response
 
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}'; // Avoid printing the ingredients
+    }
 }

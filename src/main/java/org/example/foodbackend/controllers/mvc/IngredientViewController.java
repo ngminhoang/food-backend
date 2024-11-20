@@ -1,6 +1,8 @@
 package org.example.foodbackend.controllers.mvc;
 
+import org.example.foodbackend.entities.Category;
 import org.example.foodbackend.entities.Ingredient;
+import org.example.foodbackend.services.CategoryService;
 import org.example.foodbackend.services.IngredientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,8 @@ public class IngredientViewController {
 
     @Autowired
     private IngredientService ingredientService;
+    @Autowired
+    private CategoryService categoryService;
 
     // Hiển thị trang chính của quản lý ingredient
     @GetMapping("/ingredient-management")
@@ -53,7 +57,9 @@ public class IngredientViewController {
     @GetMapping("/ingredient-form")
     public String showIngredientForm(@RequestParam(value = "id", required = false) Long id, Model model) {
         Ingredient ingredient = id != null ? ingredientService.findById(id) : new Ingredient();
+        List<Category> categories = categoryService.findAll().getBody();
         model.addAttribute("ingredient", ingredient);
+        model.addAttribute("categories", categories);
         return "ingredient-form";
     }
 
@@ -101,6 +107,11 @@ public class IngredientViewController {
         return "redirect:/ingredient-form?id=" + ingredient.getId();
     }
 
+    @PostMapping("/verify/{id}")
+    public String verifyIngredient(@PathVariable("id") Long id) {
+        ingredientService.changeVerifiedStatus(id);
+        return "redirect:/ingredient-management";
+    }
 
     // Xóa ingredient
     @PostMapping("/delete/{id}")
