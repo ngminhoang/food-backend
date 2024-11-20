@@ -28,9 +28,9 @@ public class PostDetailsResponseDTO {
     private ELanguage language;
     private LocalDateTime published_time;
     private UserInfoDTO user;
-    private List<KitchenTool> tools;
-    private List<KitchenIngredientPostDTO> ingredients;
-    private List<KitchenSpice> spices;
+    private List<ToolCheckDTO> tools;
+    private List<IngredientCheckDTO> ingredients;
+    private List<SpiceCheckDTO> spices;
     private int likes;
     @JsonProperty("is_liked")
     private boolean is_liked;

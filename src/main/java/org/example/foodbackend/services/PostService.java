@@ -38,7 +38,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     @Autowired
     private UserIngredientRepository userIngredientRepository;
 
-    public PostService(PostRepository rootRepository, AccountRepository accountRepository, InstructionStepRepository instructionStepRepository, KitchenToolRepository kitchenToolRepository, KitchenSpiceRepository kitchenSpiceRepository, KitchenIngredientRepository kitchenIngredientRepository, PostIngredientRepository postIngredientRepository) {
+    public PostService(PostRepository rootRepository, AccountRepository accountRepository, InstructionStepRepository instructionStepRepository, KitchenToolRepository kitchenToolRepository, KitchenSpiceRepository kitchenSpiceRepository, KitchenIngredientRepository kitchenIngredientRepository, PostIngredientRepository postIngredientRepository, UserIngredientRepository userIngredientRepository) {
         super(rootRepository);
         this.accountRepository = accountRepository;
         this.instructionStepRepository = instructionStepRepository;
@@ -46,6 +46,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         this.kitchenSpiceRepository = kitchenSpiceRepository;
         this.kitchenIngredientRepository = kitchenIngredientRepository;
         this.postIngredientRepository = postIngredientRepository;
+        this.userIngredientRepository = userIngredientRepository;
     }
 
     public ResponseEntity<?> addPost(Account user, PostRequestDTO postRequestDTO) {
@@ -97,7 +98,18 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
 
     private PaginatedResponseDTO<PostDetailsResponseDTO> convertToPostDetailDTO(Account user, Page<Post> postsPage) {
         List<Post> posts = postsPage.getContent();
+        List<Long> userToolIds = user.getTools().stream().map(item -> item.getId()).toList();
+        List<Long> userSpiceIds = user.getSpices().stream().map(item -> item.getId()).toList();
+        List<UserIngredient> userIngredients = userIngredientRepository.findByUser(user);
+        List<KitchenIngredientRequestDTO> kitchenIngredientIds = userIngredients.stream().map(item -> {
+                KitchenIngredient ingredient = item.getIngredient();
+                return KitchenIngredientRequestDTO.builder()
+                        .id(ingredient.getId())
+                        .quantity(item.getQuantity())
+                        .build();
+        }).toList();
         List<PostDetailsResponseDTO> dtoList = posts.stream().map(post -> {
+            //display user info
             UserInfoDTO userInfoDTO = UserInfoDTO.builder()
                     .id(post.getUser().getId())
                     .mail(post.getUser().getMail())
@@ -105,20 +117,47 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .avatar_url(post.getUser().getAvatar_url())
                     .language(post.getUser().getLanguage())
                     .build();
+            //likes
+            int likes = post.getLikedUsers().size();
+            boolean isLiked = post.getLikedUsers().contains(user);
+            //check tool
+            List<ToolCheckDTO> toolCheckDTOS = post.getTools().stream().map(tool -> ToolCheckDTO.builder()
+                    .isAvailable(userToolIds.contains(tool.getId()))
+                    .id(tool.getId())
+                    .name_en(tool.getName_en())
+                    .name_vi(tool.getName_vi())
+                    .img_url(tool.getImg_url())
+                    .build()).toList();
+            //check spice
+            List<SpiceCheckDTO> spiceCheckDTOS = post.getSpices().stream().map(spice ->
+                    SpiceCheckDTO.builder()
+                            .id(spice.getId())
+                            .name_en(spice.getName_en())
+                            .name_vi(spice.getName_vi())
+                            .img_url(spice.getImg_url())
+                            .isAvailable(userSpiceIds.contains(spice.getId())).build()).toList();
+            //get list ingredients for post
             List<PostIngredient> postIngredients = post.getPost_ingredients();
-            List<KitchenIngredientPostDTO> ingredientPostDTOS = postIngredients.stream().map(postIngredient -> {
+            List<IngredientCheckDTO> ingredientPostDTOS = postIngredients.stream().map(postIngredient -> {
                 KitchenIngredient ingredient = postIngredient.getIngredient();
-                return KitchenIngredientPostDTO.builder()
+                KitchenIngredientRequestDTO ingredientCheck = KitchenIngredientRequestDTO.builder()
+                        .id(ingredient.getId())
+                        .quantity(postIngredient.getQuantity())
+                        .build();
+
+                //to do: check issue this line
+                boolean isAvailable = kitchenIngredientIds.contains(ingredient.getId());
+                return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
                         .name_vi(ingredient.getName_vi())
                         .unit(ingredient.getUnit())
                         .img_url(ingredient.getImg_url())
                         .quantity(postIngredient.getQuantity())
+                        .isAvailable(isAvailable)
                         .build();
             }).toList();
-            int likes = post.getLikedUsers().size();
-            boolean isLiked = post.getLikedUsers().contains(user);
+            //return result
             return PostDetailsResponseDTO.builder()
                     .id(post.getId())
                     .dish_name(post.getDish_name())
@@ -128,8 +167,8 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .language(post.getLanguage())
                     .published_time(post.getPublished_time())
                     .user(userInfoDTO)
-                    .tools(post.getTools())
-                    .spices(post.getSpices())
+                    .tools(toolCheckDTOS)
+                    .spices(spiceCheckDTOS)
                     .ingredients(ingredientPostDTOS)
                     .likes(likes)
                     .is_liked(isLiked)
@@ -144,8 +183,9 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     }
 
     public PaginatedResponseDTO<PostDetailsResponseDTO> getAllRecentPost(Account user, int page, int size) {
+        Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(page, size);
-        return convertToPostDetailDTO(user, rootRepository.findAllByOrderByPublishedTimeDesc(pageable));
+        return convertToPostDetailDTO(userFound, rootRepository.findAllByOrderByPublishedTimeDesc(pageable));
     }
 
     public List<PostDetailsResponseDTO> getAllRecommendPosts(Account user) {

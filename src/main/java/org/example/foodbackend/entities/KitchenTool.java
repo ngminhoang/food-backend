@@ -19,7 +19,7 @@ import java.util.Set;
 public class KitchenTool {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column
     private String name_en;
     @Column

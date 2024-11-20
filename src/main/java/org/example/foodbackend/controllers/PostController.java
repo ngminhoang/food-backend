@@ -35,8 +35,8 @@ public class PostController extends BaseController<Post, Long, PostService> {
     }
 
     @GetMapping("post/recommend")
-    public List<PostDetailsResponseDTO> getRecommendPosts(@AuthenticationPrincipal Account user) {
-        return service.getAllRecommendPosts(user);
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPosts(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
+        return service.getAllRecentPost(user, page, size);
     }
 
     @PostMapping("post/like/{id}")
