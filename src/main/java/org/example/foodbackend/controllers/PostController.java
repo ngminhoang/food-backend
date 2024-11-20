@@ -8,6 +8,7 @@ import org.example.foodbackend.entities.dto.KitchenIngredientPostDTO;
 import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
 import org.example.foodbackend.entities.dto.PostDetailsResponseDTO;
 import org.example.foodbackend.entities.dto.PostRequestDTO;
+import org.example.foodbackend.entities.enums.EDaySession;
 import org.example.foodbackend.services.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,5 +52,19 @@ public class PostController extends BaseController<Post, Long, PostService> {
     @GetMapping("post/posted/list")
     public PaginatedResponseDTO<PostDetailsResponseDTO> getUserPostedPosts(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
         return service.getUsersPostedPosts(user, page, size);
+    }
+
+    @GetMapping("/list/by-session")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsBySession(
+            @AuthenticationPrincipal Account user,
+            @RequestParam EDaySession session,
+            @RequestParam int page,
+            @RequestParam int size) {
+        return service.getRecommendPostsBySession(user, session, page, size);
+    }
+
+    @GetMapping("/list/by-kitchen")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
+        return service.getRecommendPostsByKitchen(user, page, size);
     }
 }

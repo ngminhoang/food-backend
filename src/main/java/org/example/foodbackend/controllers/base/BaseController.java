@@ -72,4 +72,5 @@ public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
         }
 
     }
+
 }

@@ -3,6 +3,8 @@ package org.example.foodbackend.services;
 import org.aspectj.apache.bcel.generic.Instruction;
 import org.example.foodbackend.entities.*;
 import org.example.foodbackend.entities.dto.*;
+import org.example.foodbackend.entities.enums.EDaySession;
+import org.example.foodbackend.entities.enums.ELanguage;
 import org.example.foodbackend.repositories.*;
 import org.example.foodbackend.services.base.BaseService;
 import org.example.foodbackend.services.base.BaseServiceImpl;
@@ -33,6 +35,8 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     private final KitchenIngredientRepository kitchenIngredientRepository;
     @Autowired
     private final PostIngredientRepository postIngredientRepository;
+    @Autowired
+    private UserIngredientRepository userIngredientRepository;
 
     public PostService(PostRepository rootRepository, AccountRepository accountRepository, InstructionStepRepository instructionStepRepository, KitchenToolRepository kitchenToolRepository, KitchenSpiceRepository kitchenSpiceRepository, KitchenIngredientRepository kitchenIngredientRepository, PostIngredientRepository postIngredientRepository) {
         super(rootRepository);
@@ -174,5 +178,19 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(page, size);
         return convertToPostDetailDTO(userFound, rootRepository.getPostedPost(user.getId(), pageable));
+    }
+
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsBySession(Account user, EDaySession session) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(0, 10);
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(session, pageable));
+    }
+
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
+        List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(session, pageable));
     }
 }
