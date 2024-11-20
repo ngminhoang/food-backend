@@ -57,14 +57,12 @@ public class PostController extends BaseController<Post, Long, PostService> {
     @GetMapping("/list/by-session")
     public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsBySession(
             @AuthenticationPrincipal Account user,
-            @RequestParam EDaySession session,
-            @RequestParam int page,
-            @RequestParam int size) {
-        return service.getRecommendPostsBySession(user, session, page, size);
+            @RequestParam EDaySession session) {
+        return service.getRecommendPostsBySession(user, session);
     }
 
     @GetMapping("/list/by-kitchen")
-    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size) {
-        return service.getRecommendPostsByKitchen(user, page, size);
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(@AuthenticationPrincipal Account user) {
+        return service.getRecommendPostsByKitchen(user);
     }
 }

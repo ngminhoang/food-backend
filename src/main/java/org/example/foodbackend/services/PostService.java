@@ -191,6 +191,13 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         Pageable pageable = PageRequest.of(0, 10);
         List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
         List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
-        return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(session, pageable));
+        List<KitchenIngredientRequestDTO> ingredientQuantities = userFound.getUserIngredients().stream().map(userIngredient -> {
+            KitchenIngredient ingredient = userIngredient.getIngredient();
+            return KitchenIngredientRequestDTO.builder()
+                    .id(ingredient.getId())
+                    .quantity(userIngredient.getQuantity())
+                    .build();
+        }).toList();
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(toolIds, spiceIds, ingredientQuantities, pageable));
     }
 }
