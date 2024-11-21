@@ -18,8 +18,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p ORDER BY p.published_time DESC")
     Page<Post> findAllByOrderByPublishedTimeDesc(Pageable pageable);
 
-    @Query("SELECT p FROM Post p JOIN p.likedUsers u WHERE u.id = :userId AND p.language = :lang AND p.user.id != :userId")
-    Page<Post> findAllLikedPostsByUserId(Long userId, ELanguage lang, Pageable pageable);
+    @Query("SELECT p FROM Post p JOIN p.likedUsers u WHERE u.id = :userId AND p.user.id != :userId")
+    Page<Post> findAllLikedPostsByUserId(Long userId, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId")
     Page<Post> getPostedPost(Long userId, Pageable pageable);

@@ -102,11 +102,11 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         List<Long> userSpiceIds = user.getSpices().stream().map(item -> item.getId()).toList();
         List<UserIngredient> userIngredients = userIngredientRepository.findByUser(user);
         List<KitchenIngredientRequestDTO> kitchenIngredientIds = userIngredients.stream().map(item -> {
-                KitchenIngredient ingredient = item.getIngredient();
-                return KitchenIngredientRequestDTO.builder()
-                        .id(ingredient.getId())
-                        .quantity(item.getQuantity())
-                        .build();
+            KitchenIngredient ingredient = item.getIngredient();
+            return KitchenIngredientRequestDTO.builder()
+                    .id(ingredient.getId())
+                    .quantity(item.getQuantity())
+                    .build();
         }).toList();
         List<PostDetailsResponseDTO> dtoList = posts.stream().map(post -> {
             //display user info
@@ -172,6 +172,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .ingredients(ingredientPostDTOS)
                     .likes(likes)
                     .is_liked(isLiked)
+                    .is_standard(post.is_standard())
                     .build();
         }).toList();
         return PaginatedResponseDTO.<PostDetailsResponseDTO>builder()
@@ -211,7 +212,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     public PaginatedResponseDTO<PostDetailsResponseDTO> getListPostsLiked(Account user, int page, int size) {
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(page, size);
-        return convertToPostDetailDTO(userFound, rootRepository.findAllLikedPostsByUserId(user.getId(), user.getLanguage(), pageable));
+        return convertToPostDetailDTO(userFound, rootRepository.findAllLikedPostsByUserId(user.getId(), pageable));
     }
 
     public PaginatedResponseDTO<PostDetailsResponseDTO> getUsersPostedPosts(Account user, int page, int size) {

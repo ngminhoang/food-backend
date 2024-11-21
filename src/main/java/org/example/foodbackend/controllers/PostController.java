@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.foodbackend.controllers.base.BaseController;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.Post;
-import org.example.foodbackend.entities.dto.KitchenIngredientPostDTO;
 import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
 import org.example.foodbackend.entities.dto.PostDetailsResponseDTO;
 import org.example.foodbackend.entities.dto.PostRequestDTO;
