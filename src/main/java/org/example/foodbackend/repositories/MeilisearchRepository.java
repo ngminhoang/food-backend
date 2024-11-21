@@ -6,7 +6,9 @@ import com.meilisearch.sdk.Config;
 import com.meilisearch.sdk.Index;
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.exceptions.MeilisearchException;
+import org.example.foodbackend.entities.Ingredient;
 import org.example.foodbackend.entities.dto.MeilisearchIngredient;
+import org.example.foodbackend.entities.enums.SearchStatus;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,8 +22,9 @@ public class MeilisearchRepository {
     private final Index index;
     private static final String INDEX_NAME = "food_db"; // Specify your index name
     private final ObjectMapper objectMapper;
+    private final IngredientRepository ingredientRepository;
 
-    public MeilisearchRepository() throws IOException {
+    public MeilisearchRepository(IngredientRepository ingredientRepository) throws IOException {
         // Load Meilisearch configuration from properties file
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties")) {
@@ -37,6 +40,7 @@ public class MeilisearchRepository {
 
         // Initialize or create the index
         this.index = initializeIndex();
+        this.ingredientRepository = ingredientRepository;
     }
 
     private Index initializeIndex() {
@@ -65,6 +69,16 @@ public class MeilisearchRepository {
 
         index.updateSortableAttributesSettings(new String[]{"id", "name", "type", "calo", "protein", "fat", "satFat", "fiber", "carb"});
         System.out.println("Index settings updated for filtering attributes.");
+    }
+
+    public void clearAllSearchedIngredient(){
+        try{
+            ingredientRepository.changeAllVerified(SearchStatus.PENDING);
+            index.deleteAllDocuments();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     // Method to insert a MeilisearchIngredient into the index
@@ -132,4 +146,18 @@ public class MeilisearchRepository {
     }
 
     // Additional methods for working with the index can go here
+    public Integer getCountSearchedIngredient() {
+        try {
+            // Perform a search with an empty query to get the document count
+            SearchRequest searchRequest = SearchRequest.builder()
+                    .q("") // Empty query
+                    .limit(0) // No need to retrieve actual documents
+                    .build();
+
+            return index.search(searchRequest).getHits().size(); // Get the total number of hits
+        } catch (MeilisearchException e) {
+            e.printStackTrace();
+            return 0; // Return 0 in case of an error
+        }
+    }
 }

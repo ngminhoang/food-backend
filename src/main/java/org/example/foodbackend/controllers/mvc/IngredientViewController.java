@@ -40,16 +40,19 @@ public class IngredientViewController {
             @RequestParam(value = "isVerified", required = false) Boolean isVerified,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder,
             Model model) {
 
         // Lọc và tìm kiếm
-        Page<Ingredient> ingredients = ingredientService.findIngredients(search, isVerified, page, size);
+        Page<Ingredient> ingredients = ingredientService.findIngredients(search, isVerified, page, size, sortOrder);
 
         model.addAttribute("ingredients", ingredients.getContent());
         model.addAttribute("totalPages", ingredients.getTotalPages());
         model.addAttribute("currentPage", page);
         model.addAttribute("search", search);
         model.addAttribute("isVerified", isVerified);
+        model.addAttribute("sortOrder", sortOrder);
+
         return "ingredient-management";
     }
 

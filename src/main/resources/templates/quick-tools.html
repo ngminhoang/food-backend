@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quick Tools</title>
+    <nav class="navbar">
+        <button class="nav-button" onclick="location.href='/ingredient-management'">Ingredient</button>
+        <button class="nav-button" onclick="location.href='/category-management'">Category</button>
+        <button class="nav-button" onclick="location.href='/quick-tools'">Statistic</button>
+    </nav>
+    <style>
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #dddddd;
+            padding: 1vh;
+            gap: 15px;
+        }
+        .nav-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .nav-button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .count-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: inline-block;
+            width: 300px;
+        }
+        .re-update-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .re-update-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Quick Tools</h1>
+<div class="container">
+    <div>
+        <h3>Count:</h3>
+        <div class="count-box">
+            <h2>Parameter Count</h2>
+            <p th:text="${countOfParameters}">0</p>
+        </div>
+        <div class="count-box">
+            <h2>Recipe Count</h2>
+            <p th:text="${countOfRecipes}">0</p>
+        </div>
+        <div class="count-box">
+            <h2>Ingredient Count</h2>
+            <p>in DB:</p>
+            <p th:text="${countOfIngredient}">0</p>
+            <p>in Search:</p>
+            <p th:text="${countOfSearchedIngredient}"></p>
+        </div>
+    </div>
+
+    <div>
+        <h3>Tool:</h3>
+        <form action="/re-update-search" method="post">
+            <button onclick="return confirm('Are you sure you want to update all search ingredient?')" type="submit" class="re-update-button">Re-Update Search</button>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

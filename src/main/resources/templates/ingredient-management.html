@@ -5,9 +5,71 @@
     <nav class="navbar">
         <button class="nav-button" onclick="location.href='/ingredient-management'">Ingredient</button>
         <button class="nav-button" onclick="location.href='/category-management'">Category</button>
-        <button class="nav-button" onclick="location.href='/statistics'">Statistic</button>
+        <button class="nav-button" onclick="location.href='/quick-tools'">Statistic</button>
     </nav>
     <style>
+
+        /*!* Styles for the modal *!*/
+        /*.input-modal {*/
+        /*    display: none; !* Initially hidden *!*/
+        /*    position: fixed;*/
+        /*    z-index: 1000;*/
+        /*    left: 0;*/
+        /*    top: 0;*/
+        /*    width: 100%;*/
+        /*    height: 100%;*/
+        /*    overflow: auto;*/
+        /*    background-color: rgba(0, 0, 0, 0.4); !* Backdrop effect *!*/
+        /*}*/
+
+        /*!* Modal content box *!*/
+        /*.input-modal-content {*/
+        /*    background-color: #fefefe;*/
+        /*    margin: 10% auto; !* Center it vertically and horizontally *!*/
+        /*    padding: 20px;*/
+        /*    border: 1px solid #888;*/
+        /*    border-radius: 8px;*/
+        /*    width: 40%; !* Adjust the width as needed *!*/
+        /*    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);*/
+        /*}*/
+
+        /*!* Close button styles *!*/
+        /*.input-close {*/
+        /*    color: #aaa;*/
+        /*    float: right;*/
+        /*    font-size: 28px;*/
+        /*    font-weight: bold;*/
+        /*    cursor: pointer;*/
+        /*}*/
+
+        /*.input-close:hover,*/
+        /*.input-close:focus {*/
+        /*    color: #000;*/
+        /*    text-decoration: none;*/
+        /*}*/
+
+        .action-button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .action-button a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .delete-button { background-color: #e74c3c; color: white; }
+        .delete-button:hover { background-color: #c0392b; }
+
+        .edit-button { background-color: #3498db; color: white; }
+        .edit-button:hover { background-color: #2980b9; }
+
+        .verify-button { background-color: #27ae60; color: white; }
+        .verify-button:hover { background-color: #1e8449; }
 
         .navbar {
             display: flex;
@@ -180,17 +242,52 @@
     </style>
 </head>
 <body>
+
+
+<!--<div id="keyModal" class="input-modal">-->
+<!--    <div class="input-modal-content">-->
+<!--        <span class="input-close">&times;</span>-->
+<!--        <h2>Top </h2>-->
+<!--        <form id="createKeyForm">-->
+<!--            <label for="keyName">Key Name:</label>-->
+<!--            <input type="text" id="keyName" name="keyName" required><br><br>-->
+
+<!--            <label for="accurateType">Accurate Type:</label>-->
+<!--            <select id="accurateType" name="accurateType" required>-->
+<!--                <option value="0">Partial</option>-->
+<!--                <option value="1">Unamious</option>-->
+<!--            </select><br><br>-->
+
+<!--            <label for="displayKeys">Display Keywords (comma separated):</label>-->
+<!--            <input type="text" id="displayKeys" name="displayKeys" required><br><br>-->
+
+<!--            <button type="submit">Submit</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<button id="openModalBtn">Add New</button>-->
+
 <h1>Ingredient Management</h1>
 
 <!-- Search and Filter -->
 <form class="search-form" th:action="@{/ingredient-management}" method="get">
-    <input class="search-input" type="text" name="search" placeholder="Search by name" th:value="${search}">
-    <select class="search-select" name="isVerified">
-        <option th:value="null" th:selected="${isVerified == null}">All</option>
-        <option th:value="true" th:selected="${isVerified == true}">Verified</option>
-        <option th:value="false" th:selected="${isVerified == false}">Unverified</option>
-    </select>
-    <button class="search-button" type="submit">Search</button>
+    <div><input class="search-input" type="text" name="search" placeholder="Search by name" th:value="${search}"></div>
+    <div>
+        <label></label>
+        <select class="search-select" name="isVerified">
+            <option th:value="null" th:selected="${isVerified == null}">No check verified attribute</option>
+            <option th:value="true" th:selected="${isVerified == true}">Verified (worked when no order)</option>
+            <option th:value="false" th:selected="${isVerified == false}">Unverified (worked when no order)</option>
+        </select>
+        <select class="search-select" name="sortOrder">
+            <option th:value="null" th:selected="${sortOrder == null}">No Order Viral</option>
+            <option th:value="asc" th:selected="${sortOrder == 'asc'}">Ascending Viral</option>
+            <option th:value="desc" th:selected="${sortOrder == 'desc'}">Descending Viral</option>
+        </select>
+
+        <button class="search-button" type="submit">Search</button>
+    </div>
+
 </form>
 
     <a class="create-link" style="width:10vh" th:href="@{/ingredient-create}">Create New Ingredient</a>
@@ -200,23 +297,23 @@
 
 
 <div class="pagination">
-    <a th:if="${currentPage > 0}" th:href="@{/ingredient-management(page=${currentPage - 1}, search=${search}, isVerified=${isVerified})}" class="prev">Previous</a>
+    <a th:if="${currentPage > 0}" th:href="@{/ingredient-management(page=${currentPage - 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" class="prev">Previous</a>
 
     <!-- First Page -->
-    <a th:if="${currentPage > 5}" th:href="@{/ingredient-management(page=0, search=${search}, isVerified=${isVerified})}">1</a>
+    <a th:if="${currentPage > 5}" th:href="@{/ingredient-management(page=0, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}">1</a>
     <span th:if="${currentPage > 5}">...</span>
 
     <!-- Page Numbers -->
     <span th:each="pageNum : ${#numbers.sequence((currentPage - 5 > 0 ? currentPage - 5 : 0), (currentPage + 5 < totalPages - 1 ? currentPage + 5 : totalPages - 1))}">
-        <a th:href="@{/ingredient-management(page=${pageNum}, search=${search}, isVerified=${isVerified})}"
+        <a th:href="@{/ingredient-management(page=${pageNum}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}"
            th:text="${pageNum + 1}" th:classappend="${currentPage == pageNum} ? 'active' : ''"></a>
     </span>
 
     <!-- Last Page -->
     <span th:if="${currentPage < totalPages - 6}">...</span>
-    <a th:if="${currentPage < totalPages - 6}" th:href="@{/ingredient-management(page=${totalPages - 1}, search=${search}, isVerified=${isVerified})}" th:text="${totalPages}"></a>
+    <a th:if="${currentPage < totalPages - 6}" th:href="@{/ingredient-management(page=${totalPages - 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" th:text="${totalPages}"></a>
 
-    <a th:if="${currentPage < totalPages - 1}" th:href="@{/ingredient-management(page=${currentPage + 1}, search=${search}, isVerified=${isVerified})}" class="next">Next</a>
+    <a th:if="${currentPage < totalPages - 1}" th:href="@{/ingredient-management(page=${currentPage + 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" class="next">Next</a>
 </div>
 
 <!-- Data Table -->
@@ -262,11 +359,11 @@
         </td>
         <td th:if="${ingredient.getImgPaths()==null || ingredient.getImgPaths().isEmpty()}" class="image-cell" style="color: red">NO IMAGE</td>
         <td>
-             <button><a th:href="@{/ingredient-form(id=${ingredient.id})}">Edit</a></button>
+             <button class="edit-button" th:onclick=""><a th:href="@{/ingredient-form(id=${ingredient.id})}">Edit</a></button>
 
             <form th:action="@{/delete/{id}(id=${ingredient.id})}" method="post" style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE">
-                <button type="submit" onclick="return confirm('Are you sure you want to delete this ingredient?')">Delete</button>
+                <button class="delete-button" type="submit" onclick="return confirm('Are you sure you want to delete this ingredient?')">Delete</button>
             </form>
 
             <form  th:action="@{/verify/{id}(id=${ingredient.id})}" method="post" style="display:inline;">
@@ -281,24 +378,49 @@
 
 <!-- Pagination -->
 <div class="pagination">
-    <a th:if="${currentPage > 0}" th:href="@{/ingredient-management(page=${currentPage - 1}, search=${search}, isVerified=${isVerified})}" class="prev">Previous</a>
+    <a th:if="${currentPage > 0}" th:href="@{/ingredient-management(page=${currentPage - 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" class="prev">Previous</a>
 
     <!-- First Page -->
-    <a th:if="${currentPage > 5}" th:href="@{/ingredient-management(page=0, search=${search}, isVerified=${isVerified})}">1</a>
+    <a th:if="${currentPage > 5}" th:href="@{/ingredient-management(page=0, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}">1</a>
     <span th:if="${currentPage > 5}">...</span>
 
     <!-- Page Numbers -->
     <span th:each="pageNum : ${#numbers.sequence((currentPage - 5 > 0 ? currentPage - 5 : 0), (currentPage + 5 < totalPages - 1 ? currentPage + 5 : totalPages - 1))}">
-        <a th:href="@{/ingredient-management(page=${pageNum}, search=${search}, isVerified=${isVerified})}"
+        <a th:href="@{/ingredient-management(page=${pageNum}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}"
            th:text="${pageNum + 1}" th:classappend="${currentPage == pageNum} ? 'active' : ''"></a>
     </span>
 
     <!-- Last Page -->
     <span th:if="${currentPage < totalPages - 6}">...</span>
-    <a th:if="${currentPage < totalPages - 6}" th:href="@{/ingredient-management(page=${totalPages - 1}, search=${search}, isVerified=${isVerified})}" th:text="${totalPages}"></a>
+    <a th:if="${currentPage < totalPages - 6}" th:href="@{/ingredient-management(page=${totalPages - 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" th:text="${totalPages}"></a>
 
-    <a th:if="${currentPage < totalPages - 1}" th:href="@{/ingredient-management(page=${currentPage + 1}, search=${search}, isVerified=${isVerified})}" class="next">Next</a>
+    <a th:if="${currentPage < totalPages - 1}" th:href="@{/ingredient-management(page=${currentPage + 1}, search=${search}, isVerified=${isVerified}, sortOrder=${sortOrder})}" class="next">Next</a>
 </div>
 
+
+<!--<script>-->
+<!--    // Get modal elements-->
+<!--    const modal = document.getElementById("keyModal");-->
+<!--    const openModalBtn = document.getElementById("openModalBtn");-->
+<!--    const closeModalBtn = document.querySelector(".input-close");-->
+
+<!--    // Function to open the modal-->
+<!--    openModalBtn.addEventListener("click", () => {-->
+<!--        modal.style.display = "block";-->
+<!--    });-->
+
+<!--    // Function to close the modal when the close button is clicked-->
+<!--    closeModalBtn.addEventListener("click", () => {-->
+<!--        modal.style.display = "none";-->
+<!--    });-->
+
+<!--    // Function to close the modal when clicking outside the modal content-->
+<!--    window.addEventListener("click", (event) => {-->
+<!--        if (event.target === modal) {-->
+<!--            modal.style.display = "none";-->
+<!--        }-->
+<!--    });-->
+
+<!--</script>-->
 </body>
 </html>

@@ -37,6 +37,11 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
     }
 
     @Override
+    public Integer getCount() {
+        return Math.toIntExact(rootRepository.count());
+    }
+
+    @Override
     public ResponseEntity<ParameterResponseDTO> findByBodyProperties(Double weight, Double height, Integer age, String gender, String activityLevel) {
 
         try {

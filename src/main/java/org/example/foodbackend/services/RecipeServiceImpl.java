@@ -10,4 +10,9 @@ public class RecipeServiceImpl  extends BaseServiceImpl<Recipe, Long, RecipeRepo
     public RecipeServiceImpl(RecipeRepository repository) {
         super(repository);
     }
+
+    @Override
+    public Integer getCount() {
+        return Math.toIntExact(rootRepository.count());
+    }
 }

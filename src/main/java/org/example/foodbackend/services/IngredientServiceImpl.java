@@ -67,11 +67,19 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, Ing
     }
 
     @Override
-    public Page<Ingredient> findIngredients(String search, Boolean isVerified, int page, int size) {
+    public Page<Ingredient> findIngredients(String search, Boolean isVerified, int page, int size, String sortOrder) {
         Pageable pageable = PageRequest.of(page, size);
         if(search==null){
             search = "";
         }
+
+        if(sortOrder!=null && !sortOrder.isEmpty()){
+            if(sortOrder.equals("asc")){
+                return rootRepository.findIngredientsOrderedByCountAsc(pageable);
+            }
+            return rootRepository.findIngredientsOrderedByCountDesc(pageable);
+        }
+
         if(isVerified==null){
             return rootRepository.findIngredientsBySearch(search, pageable);
         }
@@ -87,5 +95,10 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, Ing
         Ingredient ingredient = rootRepository.findById(id).get();
         ingredient.setIsVerified(!ingredient.getIsVerified());
         rootRepository.save(ingredient);
+    }
+
+    @Override
+    public Integer getCount() {
+        return Math.toIntExact(rootRepository.count());
     }
 }
