@@ -220,10 +220,10 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         return convertToPostDetailDTO(userFound, rootRepository.getPostedPost(user.getId(), pageable));
     }
 
-    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsBySession(Account user, EDaySession session) {
+    public List<PostDetailsResponseDTO> getRecommendPostsBySession(Account user, EDaySession session) {
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(0, 10);
-        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(session, pageable));
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(session, pageable)).getData();
     }
 
     public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {

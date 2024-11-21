@@ -55,7 +55,7 @@ public class PostController extends BaseController<Post, Long, PostService> {
     }
 
     @GetMapping("/list/by-session")
-    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsBySession(
+    public List<PostDetailsResponseDTO> getRecommendPostsBySession(
             @AuthenticationPrincipal Account user,
             @RequestParam EDaySession session) {
         return service.getRecommendPostsBySession(user, session);
