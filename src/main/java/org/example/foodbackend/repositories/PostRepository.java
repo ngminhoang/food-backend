@@ -27,21 +27,30 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT p FROM Post p JOIN p.daySessions s WHERE s.name = :session AND p.is_standard = true")
     Page<Post> getPostsBySession(EDaySession session, Pageable pageable);
 
-    @Query("SELECT DISTINCT p FROM Post p " +
-            "JOIN p.tools t " +
-            "JOIN p.spices s " +
-            "JOIN p.post_ingredients pi " +
-            "WHERE (:toolIds IS NULL OR t.id IN :toolIds) " +
-            "AND (:spiceIds IS NULL OR s.id IN :spiceIds) " +
-            "AND (:ingredientQuantities IS NULL OR " +
-            "     EXISTS (SELECT 1 FROM PostIngredient pi2 " +
-            "             WHERE pi2.post = p " +
-            "             AND pi2.ingredient.id = pi.ingredient.id " +
-            "             AND pi2.quantity >= pi.quantity))" +
-            "AND p.is_standard = true ")
+    @Query("""
+                SELECT p FROM Post p
+                WHERE NOT EXISTS (
+                    SELECT pt FROM KitchenTool pt
+                    JOIN p.tools t
+                    WHERE t.id NOT IN :toolIds
+                )
+                AND NOT EXISTS (
+                    SELECT ps FROM KitchenSpice ps
+                    JOIN p.spices s
+                    WHERE s.id NOT IN :spiceIds
+                )
+                AND NOT EXISTS (
+                     SELECT pi FROM PostIngredient pi
+                     JOIN pi.ingredient i
+                     LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId 
+                     WHERE pi.post.id = p.id
+                     AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0)) 
+                )
+                AND p.is_standard = true
+            """)
     Page<Post> getPostsByKitchen(
+            Long userId,
             List<Long> toolIds,
             List<Long> spiceIds,
-            List<KitchenIngredientRequestDTO> ingredientQuantities,
             Pageable pageable);
 }

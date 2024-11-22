@@ -38,6 +38,8 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     private final PostIngredientRepository postIngredientRepository;
     @Autowired
     private UserIngredientRepository userIngredientRepository;
+    @Autowired
+    private DaySessionRepository daySessionRepository;
 
     public PostService(PostRepository rootRepository, AccountRepository accountRepository, InstructionStepRepository instructionStepRepository, KitchenToolRepository kitchenToolRepository, KitchenSpiceRepository kitchenSpiceRepository, KitchenIngredientRepository kitchenIngredientRepository, PostIngredientRepository postIngredientRepository, UserIngredientRepository userIngredientRepository) {
         super(rootRepository);
@@ -56,13 +58,16 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
             List<KitchenTool> listTools = kitchenToolRepository.findAllById(postRequestDTO.getTools());
             List<KitchenSpice> listSpices = kitchenSpiceRepository.findAllById(postRequestDTO.getSpices());
 
+            List<DaySession> allSessions = daySessionRepository.findAll();
+            List<DaySession> sessions = !postRequestDTO.getSessions().isEmpty() ? postRequestDTO.getSessions() : allSessions;
+
             Post post = Post.builder()
                     .dish_name(postRequestDTO.getDish_name())
                     .dish_img_url(postRequestDTO.getDish_img_url())
                     .description(postRequestDTO.getDescription())
                     .language(postRequestDTO.getLanguage())
                     .duration(postRequestDTO.getDuration())
-                    .daySessions(postRequestDTO.getSessions())
+                    .daySessions(sessions)
                     .user(account)
                     .tools(listTools)
                     .spices(listSpices)
@@ -102,7 +107,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         List<Long> userToolIds = user.getTools().stream().map(item -> item.getId()).toList();
         List<Long> userSpiceIds = user.getSpices().stream().map(item -> item.getId()).toList();
         List<UserIngredient> userIngredients = userIngredientRepository.findByUser(user);
-        List<KitchenIngredientRequestDTO> kitchenIngredientIds = userIngredients.stream().map(item -> {
+        List<KitchenIngredientRequestDTO> userIngredientsChecking = userIngredients.stream().map(item -> {
             KitchenIngredient ingredient = item.getIngredient();
             return KitchenIngredientRequestDTO.builder()
                     .id(ingredient.getId())
@@ -141,13 +146,11 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
             List<PostIngredient> postIngredients = post.getPost_ingredients();
             List<IngredientCheckDTO> ingredientPostDTOS = postIngredients.stream().map(postIngredient -> {
                 KitchenIngredient ingredient = postIngredient.getIngredient();
-                KitchenIngredientRequestDTO ingredientCheck = KitchenIngredientRequestDTO.builder()
-                        .id(ingredient.getId())
-                        .quantity(postIngredient.getQuantity())
-                        .build();
 
                 //to do: check issue this line
-                boolean isAvailable = kitchenIngredientIds.contains(ingredient.getId());
+                boolean isAvailable = userIngredientsChecking.stream()
+                        .anyMatch(item -> item.getId().equals(ingredient.getId())
+                                          && item.getQuantity() >= postIngredient.getQuantity());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
@@ -228,18 +231,21 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(session, pageable)).getData();
     }
 
-    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {
+    public List<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(0, 10);
         List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
         List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
-        List<KitchenIngredientRequestDTO> ingredientQuantities = userFound.getUserIngredients().stream().map(userIngredient -> {
-            KitchenIngredient ingredient = userIngredient.getIngredient();
-            return KitchenIngredientRequestDTO.builder()
-                    .id(ingredient.getId())
-                    .quantity(userIngredient.getQuantity())
-                    .build();
-        }).toList();
-        return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(toolIds, spiceIds, ingredientQuantities, pageable));
+//        List<KitchenIngredientRequestDTO> ingredientQuantities = userFound.getUserIngredients()
+//                .stream().map(userIngredient -> {
+//                    KitchenIngredient ingredient = userIngredient.getIngredient();
+//                    return KitchenIngredientRequestDTO.builder()
+//                            .id(ingredient.getId())
+//                            .quantity(userIngredient.getQuantity())
+//                            .build();
+//                }).toList();
+//        List<Long> ingredientIds = userFound.getUserIngredients().stream().map(UserIngredient::getId).toList();
+//        List<Integer> quantities = userFound.getUserIngredients().stream().map(UserIngredient::getQuantity).toList();
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(user.getId(), toolIds, spiceIds, pageable)).getData();
     }
 }

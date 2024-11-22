@@ -61,7 +61,7 @@ public class PostController extends BaseController<Post, Long, PostService> {
     }
 
     @GetMapping("/list/by-kitchen")
-    public PaginatedResponseDTO<PostDetailsResponseDTO> getRecommendPostsByKitchen(@AuthenticationPrincipal Account user) {
+    public List<PostDetailsResponseDTO> getRecommendPostsByKitchen(@AuthenticationPrincipal Account user) {
         return service.getRecommendPostsByKitchen(user);
     }
 }

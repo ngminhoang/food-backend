@@ -34,6 +34,6 @@ public class PostDetailsResponseDTO {
     private int likes;
     @JsonProperty("is_liked")
     private boolean is_liked;
-    @JsonProperty
+    @JsonProperty("is_standard")
     private boolean is_standard;
 }
