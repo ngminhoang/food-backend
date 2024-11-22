@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    @Query("SELECT p FROM Post p ORDER BY p.published_time DESC")
+    @Query("SELECT p FROM Post p WHERE p.is_standard = false ORDER BY p.published_time DESC")
     Page<Post> findAllByOrderByPublishedTimeDesc(Pageable pageable);
 
     @Query("SELECT p FROM Post p JOIN p.likedUsers u WHERE u.id = :userId AND p.user.id != :userId")
@@ -37,7 +37,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "     EXISTS (SELECT 1 FROM PostIngredient pi2 " +
             "             WHERE pi2.post = p " +
             "             AND pi2.ingredient.id = pi.ingredient.id " +
-            "             AND pi2.quantity >= pi.quantity))")
+            "             AND pi2.quantity >= pi.quantity))" +
+            "AND p.is_standard = true ")
     Page<Post> getPostsByKitchen(
             List<Long> toolIds,
             List<Long> spiceIds,

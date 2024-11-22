@@ -50,6 +50,7 @@ public class AuthServiceImpl implements AuthService {
                 .mail(request.getMail())
                 .password(encryptedPassword)
                 .role(Erole.ROLE_USER)
+                .language(ELanguage.vi)
                 .build();
         accountRepository.save(user);
         String jwt = jwtService.generateToken(user);

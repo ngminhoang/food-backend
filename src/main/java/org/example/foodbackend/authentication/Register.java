@@ -10,5 +10,4 @@ public class Register {
     private String mail;
     private String password;
     private String name;
-    private Erole role;
 }

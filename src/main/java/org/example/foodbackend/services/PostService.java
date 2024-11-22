@@ -5,6 +5,7 @@ import org.example.foodbackend.entities.*;
 import org.example.foodbackend.entities.dto.*;
 import org.example.foodbackend.entities.enums.EDaySession;
 import org.example.foodbackend.entities.enums.ELanguage;
+import org.example.foodbackend.entities.enums.Erole;
 import org.example.foodbackend.repositories.*;
 import org.example.foodbackend.services.base.BaseService;
 import org.example.foodbackend.services.base.BaseServiceImpl;
@@ -65,7 +66,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .user(account)
                     .tools(listTools)
                     .spices(listSpices)
-                    .is_standard(false)
+                    .is_standard(user.getRole() == Erole.ROLE_ADMIN)
                     .build();
             Post postReturn = rootRepository.save(post);
             for (KitchenIngredientRequestDTO ingredient : postRequestDTO.getIngredients()) {
