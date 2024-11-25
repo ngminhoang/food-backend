@@ -17,10 +17,9 @@ public class ScheduleService {
     IngredientRepository ingredientRepository;
 
     // Runs daily at midnight using cron expression
-    @Scheduled(fixedDelay = 5)
+    @Scheduled(fixedDelay = 5000L)
     public void scheduleDailySearch() {
         searchService.performDailySearch();
-
 
         // Gọi phương thức thực hiện tìm kiếm hàng ngày
     }

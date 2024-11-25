@@ -37,7 +37,7 @@ public class IngredientServiceImpl extends BaseServiceImpl<Ingredient, Long, Ing
         // Get the page with the specified number of results
         List<Ingredient> ingredients = rootRepository.findBySearchStatus(SearchStatus.PENDING, pageRequest);
 
-        log.error("pending ingredients: " + String.valueOf(ingredients.size()));
+        log.info("pending ingredients: " + String.valueOf(ingredients.size()));
 
 //        List<MeilisearchIngredient> meilisearchIngredients = ingradients.stream().map(MeilisearchIngredient::new).toList();
         for (Ingredient ingredient : ingredients) {
