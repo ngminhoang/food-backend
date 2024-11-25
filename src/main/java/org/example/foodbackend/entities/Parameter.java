@@ -30,7 +30,7 @@ public class Parameter {
     Double sumFats;
     Double sumSatFats;
 
-    @OneToMany(mappedBy = "parameter", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parameter", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Recipe> recipes;
 
 

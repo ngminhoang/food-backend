@@ -33,90 +33,132 @@ public class GoogleUtil {
     private static final String IMAGE_DIRECTORY = "db_data/images/igredient/";
 
     public GoogleUtil() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+        try{
+            WebDriverManager.chromedriver().setup();
+            driver = new ChromeDriver();
+        }
+        catch (Exception ex){
+            driver = null;
+        }
+
     }
 
     public String saveBase64Image(String base64Image) throws IOException {
-        // Ensure the directory exists
-        File directory = new File(IMAGE_DIRECTORY);
-        if (!directory.exists()) {
-            // Create the directory if it does not exist
-            directory.mkdirs();
+        if (base64Image == null || !base64Image.startsWith("data:image")) {
+            System.err.println("Invalid Base64 input: " + base64Image); // Log the error
+            return null; // Return null or an appropriate fallback value
         }
 
-        // Check if the Base64 string contains a MIME type prefix (e.g., "data:image/png;base64,")
-        String base64Data = base64Image.contains(",") ? base64Image.split(",")[1] : base64Image;
+        try {
+            String base64Data = base64Image.split(",")[1]; // Extract the data
+            byte[] imageBytes = Base64.getDecoder().decode(base64Data);
 
-        // Generate a unique file name with .png extension
-        String fileName = UUID.randomUUID().toString() + ".png";
-        String filePath = IMAGE_DIRECTORY + fileName;
+            String fileName = UUID.randomUUID().toString() + ".png";
+            String filePath = IMAGE_DIRECTORY + fileName;
 
-        // Decode the Base64 image string
-        byte[] imageBytes = Base64.getDecoder().decode(base64Data);
+            File directory = new File(IMAGE_DIRECTORY);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
 
-        // Save the image to the specified path
-        File imageFile = new File(filePath);
-        try (FileOutputStream fos = new FileOutputStream(imageFile)) {
-            fos.write(imageBytes);
+            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+                fos.write(imageBytes);
+            }
+
+            return "/images/igredient/" + fileName;
+        } catch (Exception e) {
+            System.err.println("Error decoding Base64 image: " + e.getMessage());
+            return null; // Handle errors gracefully
         }
-
-        // Return the relative path of the saved image
-        return "/images/igredient/" + fileName;
     }
 
+
+
+
+
     public void performDailySearch() {
+//        WebDriver driver = null; // Local instance
         try {
+//            WebDriverManager.chromedriver().setup();
+//            driver = new ChromeDriver();
+
             Pageable pageable = PageRequest.of(0, 50);
             List<Ingredient> ingredientList = ingredientRepository.findAllWhereNoImg(pageable);
 
             for (Ingredient ingredient : ingredientList) {
-                // Điều hướng đến Google Image Search cho tên của ingredient
+                // Navigate to Google Image Search for the ingredient name
                 driver.get("https://www.google.com/search?udm=2&q=" + ingredient.getName() + "&tbm=isch");
 
-                // Đợi cho các hình ảnh được load
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("rg_i")));
+                // Wait for the images to load
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(100));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//img")));
 
-                // Lấy danh sách các thẻ img có class "rg_i Q4LuWd" và chỉ lấy đúng 3 URL
+                // Find all <img> elements under the result container
+                List<WebElement> imageElements = driver.findElements(By.xpath("//img"));
+
+                // Retrieve only the first 3 image URLs
                 List<String> imageUrls = new ArrayList<>();
-                List<WebElement> imageElements = driver.findElements(By.cssSelector("img.rg_i.Q4LuWd"));
-
                 int count = 0;
+
                 for (WebElement imgElement : imageElements) {
                     if (count >= 3) break;
 
                     String imgUrl = imgElement.getAttribute("src");
-                    imageUrls.add(saveBase64Image(imgUrl));
-                    count++;
-//                    if (imgUrl == null || imgUrl.isEmpty()) {
-//                        imgUrl = imgElement.getAttribute("data-src");
-//                    }
-//
-//                    if (imgUrl != null && !imgUrl.isEmpty()) {
-//                        imageUrls.add(imgUrl);
-//                        count++;
-//                    }
+                    if (imgUrl == null || imgUrl.isEmpty()) {
+                        imgUrl = imgElement.getAttribute("data-src"); // Fallback to data-src
+                    }
+
+                    if (imgUrl != null && !imgUrl.isEmpty()) {
+                        try {
+                            // Retrieve the image height
+                            String heightStr = imgElement.getAttribute("height");
+                            int height = 0; // Default height
+                            if (heightStr != null && !heightStr.isEmpty()) {
+                                height = Integer.parseInt(heightStr); // Parse height if available
+                            }
+
+                            // Proceed only if the height is less than 250
+                            if (height > 170) {
+                                if (imgUrl.startsWith("data:image")) {
+                                    // Save Base64 image
+                                    imageUrls.add(saveBase64Image(imgUrl));
+                                } else if (imgUrl.startsWith("http")) {
+                                    continue;
+//                                    imageUrls.add(imgUrl); // Process HTTP image URL
+                                } else {
+                                    System.out.println("Unhandled image format: " + imgUrl); // Log unhandled cases
+                                }
+                                count++;
+                            }
+                        } catch (IllegalArgumentException e) {
+                            System.err.println("Failed to process image: " + imgUrl + " - " + e.getMessage());
+                        }
+                    }
                 }
 
+
+                // Set the image URLs for the ingredient and save it to the database
                 ingredient.setImgPaths(imageUrls);
-                Ingredient x = ingredientRepository.save(ingredient);
-                // In ra các URL hoặc lưu vào database theo nhu cầu của bạn
-                for (String url : x.getImgPaths()) {
+                ingredientRepository.save(ingredient);
+
+                // Log or perform further operations on the image URLs
+                for (String url : imageUrls) {
                     System.out.println("Image URL: " + url);
-//                    String img = saveBase64Image(url);
-                    // Lưu URL vào cơ sở dữ liệu nếu cần thiết, ví dụ:
-//                     ingredientRepository.updateImageUrl(ingradient.getId(), url);
                 }
             }
-//            ingredientRepository.saveAll(ingredientList);
-
+            // Existing search logic...
         } catch (Exception e) {
             log.error("Error performing daily search", e);
-        } finally {
-            // Đóng driver hoặc các resource nếu cần
         }
+//        finally {
+//            if (driver != null) {
+//                driver.quit();
+//            }
+//        }
     }
+
+
+
 
 
 

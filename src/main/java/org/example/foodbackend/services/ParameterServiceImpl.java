@@ -28,7 +28,14 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
     @Override
     public ResponseEntity<ParameterResponseDTO> findByNutrientProperties(Parameter parameter) {
 
-        Parameter result = findClosestMatch(parameter, rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
+        List<Parameter> results = rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
+        Parameter result = new Parameter();
+        try{
+            result = results.get(0);
+        }
+        catch (Exception ex){
+            result = null;
+        }
         if (result != null) {
             return ResponseEntity.ok(new ParameterResponseDTO(result));
         }
@@ -110,8 +117,14 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
                     .sumFibers(fiber)
                     .build();
 
-            Parameter result = findClosestMatch(parameter, rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats()));
-
+            List<Parameter> results = rootRepository.findClosestMatchs(parameter.getSumCalories(), parameter.getSumProteins(), parameter.getSumCarbs(), parameter.getSumFibers(), parameter.getSumFats(), parameter.getSumSatFats());
+            Parameter result = new Parameter();
+            try{
+                result = results.get(0);
+            }
+            catch (Exception ex){
+                result = null;
+            }
             if (result != null) {
                 return ResponseEntity.ok(new ParameterResponseDTO(result));
             }
