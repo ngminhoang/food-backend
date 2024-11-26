@@ -25,7 +25,7 @@ public class CookHistory {
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
-    @Column
+    @Column(name = "cooked_time")
     @CreationTimestamp
-    private LocalDateTime cooked_time;
+    private LocalDateTime cookedTime;
 }

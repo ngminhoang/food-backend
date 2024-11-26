@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -23,7 +24,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId")
     Page<Post> getPostedPost(Long userId, Pageable pageable);
-
+    @Query("SELECT p FROM Post p WHERE p.user.id = :userId AND p.id = :postId")
+    Optional<Post> getPostedPostByPostId(Long userId, Long postId);
     @Query("SELECT p FROM Post p JOIN p.daySessions s WHERE s.name = :session AND p.is_standard = true")
     Page<Post> getPostsBySession(EDaySession session, Pageable pageable);
 
@@ -47,10 +49,46 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                      AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0)) 
                 )
                 AND p.is_standard = true
+                AND p.language = :lang
             """)
     Page<Post> getPostsByKitchen(
             Long userId,
             List<Long> toolIds,
             List<Long> spiceIds,
-            Pageable pageable);
+            Pageable pageable,
+            ELanguage lang);
+
+    @Query("""
+                SELECT p FROM Post p
+                JOIN p.daySessions s
+                WHERE NOT EXISTS (
+                    SELECT pt FROM KitchenTool pt
+                    JOIN p.tools t
+                    WHERE t.id NOT IN :toolIds
+                )
+                AND NOT EXISTS (
+                    SELECT ps FROM KitchenSpice ps
+                    JOIN p.spices s
+                    WHERE s.id NOT IN :spiceIds
+                )
+                AND NOT EXISTS (
+                     SELECT pi FROM PostIngredient pi
+                     JOIN pi.ingredient i
+                     LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId 
+                     WHERE pi.post.id = p.id
+                     AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0)) 
+                )
+                AND p.is_standard = false
+                AND p.language = :lang
+                AND s.name = :session
+          """)
+    List<Post> getRecommendedPosts(
+            Long userId,
+            List<Long> toolIds,
+            List<Long> spiceIds,
+            ELanguage lang,
+            EDaySession session);
+
+    @Query("SELECT p FROM Post p JOIN p.daySessions s LEFT JOIN p.likedUsers lu WHERE p.language = :lang AND s.name =:session GROUP BY p.id ORDER BY COUNT(lu) DESC")
+    List<Post> getListPostByLikesDesc(ELanguage lang, EDaySession session);
 }

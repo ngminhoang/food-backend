@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDetailsResponseDTO {
+public class PostHistoryDetailsDTO {
     private Long id;
     private String dish_name;
     private String dish_img_url;
@@ -31,4 +31,5 @@ public class PostDetailsResponseDTO {
     private boolean is_liked;
     @JsonProperty("is_standard")
     private boolean is_standard;
+    private LocalDateTime cooked_time;
 }

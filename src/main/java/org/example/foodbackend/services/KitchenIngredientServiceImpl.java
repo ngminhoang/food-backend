@@ -6,6 +6,7 @@ import org.example.foodbackend.entities.UserIngredient;
 import org.example.foodbackend.entities.dto.KitchenIngredientRequestDTO;
 import org.example.foodbackend.entities.dto.KitchenIngredientResponseDTO;
 import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
+import org.example.foodbackend.entities.enums.ELanguage;
 import org.example.foodbackend.repositories.AccountRepository;
 import org.example.foodbackend.repositories.KitchenIngredientRepository;
 import org.example.foodbackend.repositories.UserIngredientRepository;
@@ -91,10 +92,7 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
         }
     }
 
-    @Override
-    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getListIngredientsNotAdded(Account user, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<KitchenIngredient> ingredientsPages = rootRepository.getAllKitchenIngredientsNotAdded(user, pageable);
+    private PaginatedResponseDTO<KitchenIngredientResponseDTO> convertIngredientDTO(Page<KitchenIngredient> ingredientsPages) {
         Page<KitchenIngredientResponseDTO> kitchenIngredientResponseDTOS = ingredientsPages.map(ingredientsPage -> KitchenIngredientResponseDTO.builder().id(ingredientsPage.getId())
                 .name_vi(ingredientsPage.getName_vi())
                 .name_en(ingredientsPage.getName_en())
@@ -107,6 +105,21 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
                 .totalItems(kitchenIngredientResponseDTOS.getTotalElements())
                 .totalPages(kitchenIngredientResponseDTOS.getTotalPages())
                 .build();
+    }
+
+    @Override
+    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getListIngredientsNotAdded(Account user, int page, int size, String query) {
+        Pageable pageable = PageRequest.of(page, size);
+        ELanguage language = user.getLanguage();
+        Page<KitchenIngredient> ingredientsPages = null;
+        if (language == ELanguage.vi) {
+            ingredientsPages = rootRepository.getAllKitchenIngredientsNotAddedVi(user, pageable, query.trim());
+            return convertIngredientDTO(ingredientsPages);
+        } else if (language == ELanguage.en) {
+            ingredientsPages = rootRepository.getAllKitchenIngredientsNotAddedEn(user, pageable, query);
+            return convertIngredientDTO(ingredientsPages);
+        }
+        return null;
     }
 
     @Override
@@ -129,5 +142,20 @@ public class KitchenIngredientServiceImpl extends BaseServiceImpl<KitchenIngredi
         } catch (ChangeSetPersister.NotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @Override
+    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getAllIngredients(Account user, int page, int size, String query) {
+        Pageable pageable = PageRequest.of(page, size);
+        ELanguage language = user.getLanguage();
+        Page<KitchenIngredient> ingredientsPages = null;
+        if (language == ELanguage.vi) {
+            ingredientsPages = rootRepository.findAllByNameVi(pageable, query.trim());
+            return convertIngredientDTO(ingredientsPages);
+        } else if (language == ELanguage.en) {
+            ingredientsPages = rootRepository.findAllByNameEn(pageable, query);
+            return convertIngredientDTO(ingredientsPages);
+        }
+        return null;
     }
 }

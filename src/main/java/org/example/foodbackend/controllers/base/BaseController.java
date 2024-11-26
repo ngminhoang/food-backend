@@ -1,10 +1,12 @@
 package org.example.foodbackend.controllers.base;
 
+import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.dto.PaginatedResponseDTO;
 import org.example.foodbackend.services.base.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,5 +74,4 @@ public abstract class BaseController<T, ID, S extends BaseService<T, ID>> {
         }
 
     }
-
 }

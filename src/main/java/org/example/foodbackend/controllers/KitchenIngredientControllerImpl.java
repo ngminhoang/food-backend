@@ -40,8 +40,9 @@ public class KitchenIngredientControllerImpl extends BaseController<KitchenIngre
     public PaginatedResponseDTO<KitchenIngredientResponseDTO> getListIngredientNotAdded(
             @AuthenticationPrincipal Account account,
             @RequestParam int page,
-            @RequestParam int size) {
-        return service.getListIngredientsNotAdded(account, page, size);
+            @RequestParam int size,
+            @RequestParam String query) {
+        return service.getListIngredientsNotAdded(account, page, size, query);
     }
 
     @PutMapping("user/ingredient")
@@ -50,5 +51,10 @@ public class KitchenIngredientControllerImpl extends BaseController<KitchenIngre
             @RequestBody KitchenIngredientRequestDTO ingredient
     ) {
         return service.editQuantityIngredient(user, ingredient);
+    }
+
+    @GetMapping("/list-all")
+    public PaginatedResponseDTO<KitchenIngredientResponseDTO> getListAllIngredients(@AuthenticationPrincipal Account user, @RequestParam int page, @RequestParam int size, @RequestParam String query) {
+        return service.getAllIngredients(user, page, size, query);
     }
 }
