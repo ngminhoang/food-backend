@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +27,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> getPostedPost(Long userId, Pageable pageable);
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId AND p.id = :postId")
     Optional<Post> getPostedPostByPostId(Long userId, Long postId);
-    @Query("SELECT p FROM Post p JOIN p.daySessions s WHERE s.name = :session AND p.is_standard = true")
-    Page<Post> getPostsBySession(EDaySession session, Pageable pageable);
+    @Query("SELECT p FROM Post p JOIN p.daySessions s LEFT JOIN p.histories h WHERE s.name = :session AND p.is_standard = true AND ((h.cookedTime < :timeLimit and h.user.id = :userId) OR h.cookedTime IS NULL)")
+    Page<Post> getPostsBySession(Long userId, EDaySession session, LocalDateTime timeLimit, Pageable pageable);
 
     @Query("""
                 SELECT p FROM Post p
+                LEFT JOIN p.histories h
                 WHERE NOT EXISTS (
                     SELECT pt FROM KitchenTool pt
                     JOIN p.tools t
@@ -50,17 +52,22 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 )
                 AND p.is_standard = true
                 AND p.language = :lang
+                AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
             """)
     Page<Post> getPostsByKitchen(
             Long userId,
             List<Long> toolIds,
             List<Long> spiceIds,
-            Pageable pageable,
-            ELanguage lang);
+            ELanguage lang,
+            LocalDateTime timeLimit,
+            Pageable pageable
+            );
 
     @Query("""
                 SELECT p FROM Post p
                 JOIN p.daySessions s
+                LEFT JOIN p.likedUsers lu
+                LEFT JOIN p.histories h
                 WHERE NOT EXISTS (
                     SELECT pt FROM KitchenTool pt
                     JOIN p.tools t
@@ -74,21 +81,36 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 AND NOT EXISTS (
                      SELECT pi FROM PostIngredient pi
                      JOIN pi.ingredient i
-                     LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId 
+                     LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId
                      WHERE pi.post.id = p.id
-                     AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0)) 
+                     AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0))
                 )
                 AND p.is_standard = false
                 AND p.language = :lang
                 AND s.name = :session
+                AND p.user.id != :userId
+                AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
+                GROUP BY p.id
+                ORDER BY COUNT(lu) DESC, p.published_time DESC
           """)
     List<Post> getRecommendedPosts(
             Long userId,
             List<Long> toolIds,
             List<Long> spiceIds,
             ELanguage lang,
-            EDaySession session);
+            EDaySession session,
+            LocalDateTime timeLimit);
 
-    @Query("SELECT p FROM Post p JOIN p.daySessions s LEFT JOIN p.likedUsers lu WHERE p.language = :lang AND s.name =:session GROUP BY p.id ORDER BY COUNT(lu) DESC")
-    List<Post> getListPostByLikesDesc(ELanguage lang, EDaySession session);
+    @Query("""
+            SELECT p FROM Post p
+            JOIN p.daySessions s
+            LEFT JOIN p.likedUsers lu
+            LEFT JOIN p.histories h
+            WHERE p.language = :lang
+            AND s.name =:session
+            AND p.user.id != :userId
+            AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
+            GROUP BY p.id
+            ORDER BY COUNT(lu) DESC""")
+    List<Post> getListPostByLikesDesc(Long userId, ELanguage lang, EDaySession session, LocalDateTime timeLimit);
 }

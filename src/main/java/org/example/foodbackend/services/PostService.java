@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.NoRouteToHostException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -286,9 +287,11 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                         toolIds,
                         spiceIds,
                         userFound.getLanguage(),
-                        daySession
+                        daySession,
+                        LocalDateTime.now().minusDays(3)
                         ));
-        List<PostDetailsResponseDTO> resultMostLike = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(userFound.getLanguage(), daySession));
+        List<PostDetailsResponseDTO> resultMostLike = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(
+                userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(3)));
         Set<PostDetailsResponseDTO> combined = new LinkedHashSet<>(resultRec);
         combined.addAll(resultMostLike);
 
@@ -336,7 +339,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     public List<PostDetailsResponseDTO> getRecommendPostsBySession(Account user, EDaySession session) {
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(0, 10);
-        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(session, pageable)).getData();
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(userFound.getId(),session, LocalDateTime.now().minusDays(3),pageable)).getData();
     }
 
     public List<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {
@@ -348,8 +351,9 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 user.getId(),
                 toolIds,
                 spiceIds,
-                pageable,
-                user.getLanguage())).getData();
+                user.getLanguage(),
+                LocalDateTime.now().minusDays(3),
+                pageable)).getData();
     }
 
     public ResponseEntity<List<InstructionStep>> getPostStep(Long id) {

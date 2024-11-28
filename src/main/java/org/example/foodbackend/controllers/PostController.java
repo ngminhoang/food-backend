@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/post")
@@ -37,8 +40,8 @@ public class PostController extends BaseController<Post, Long, PostService> {
             @AuthenticationPrincipal Account user,
             @RequestParam int page,
             @RequestParam int size,
-            @RequestParam EDaySession daySession) {
-        return service.getAllRecommendPosts(user, page, size, daySession);
+            @RequestParam EDaySession session) {
+        return service.getAllRecommendPosts(user, page, size, session);
     }
 
     @PostMapping("post/like/{id}")
