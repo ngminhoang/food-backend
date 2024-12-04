@@ -93,4 +93,9 @@ public class PostController extends BaseController<Post, Long, PostService> {
     public ResponseEntity<?> deleteById(@AuthenticationPrincipal Account user, @PathVariable Long id) {
         return service.deleteUserPost(user, id);
     }
+
+    @GetMapping("/recommend/other-chef")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getOtherChefTopRecommend(@AuthenticationPrincipal Account user, @RequestParam EDaySession session) {
+        return service.getTopRecommendPosts(user, session);
+    }
 }

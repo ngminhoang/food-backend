@@ -243,7 +243,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 //to do: check issue this line
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
@@ -289,7 +289,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                         userFound.getLanguage(),
                         daySession,
                         LocalDateTime.now().minusDays(3)
-                        ));
+                ));
         List<PostDetailsResponseDTO> resultMostLike = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(
                 userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(3)));
         Set<PostDetailsResponseDTO> combined = new LinkedHashSet<>(resultRec);
@@ -339,7 +339,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     public List<PostDetailsResponseDTO> getRecommendPostsBySession(Account user, EDaySession session) {
         Account userFound = accountRepository.findById(user.getId()).get();
         Pageable pageable = PageRequest.of(0, 10);
-        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(userFound.getId(),session, LocalDateTime.now().minusDays(3),pageable)).getData();
+        return convertToPostDetailDTO(userFound, rootRepository.getPostsBySession(userFound.getId(), session, LocalDateTime.now().minusDays(3), pageable)).getData();
     }
 
     public List<PostDetailsResponseDTO> getRecommendPostsByKitchen(Account user) {
@@ -438,7 +438,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
 
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
@@ -477,10 +477,10 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
     }
 
     public ResponseEntity<PaginatedResponseDTO<PostHistoryDetailsDTO>> getListCooked(Account user, int page, int size) {
-            Account userFound = accountRepository.findById(user.getId()).get();
-            Pageable pageable = PageRequest.of(page, size, Sort.by("cookedTime").descending());
-            Page<CookHistory> cookHistories = cookHistoryRepository.findAllByUser(userFound, pageable);
-            return ResponseEntity.ok(convertToPostHistoryDetailDTO(userFound, cookHistories));
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("cookedTime").descending());
+        Page<CookHistory> cookHistories = cookHistoryRepository.findAllByUser(userFound, pageable);
+        return ResponseEntity.ok(convertToPostHistoryDetailDTO(userFound, cookHistories));
     }
 
     public ResponseEntity<?> deleteUserPost(Account user, Long id) {
@@ -492,5 +492,38 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    public PaginatedResponseDTO<PostDetailsResponseDTO> getTopRecommendPosts(Account user, EDaySession daySession) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
+        List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
+        List<PostDetailsResponseDTO> resultRec = convertToPostDetailDTOList(
+                userFound,
+                rootRepository.getRecommendedPosts(
+                        userFound.getId(),
+                        toolIds,
+                        spiceIds,
+                        userFound.getLanguage(),
+                        daySession,
+                        LocalDateTime.now().minusDays(3)
+                ));
+        List<PostDetailsResponseDTO> resultMostLike = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(
+                userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(3)));
+        Set<PostDetailsResponseDTO> combined = new LinkedHashSet<>(resultRec);
+        combined.addAll(resultMostLike);
+
+        List<PostDetailsResponseDTO> combinedList = new ArrayList<>(combined);
+        int start = 0;
+        int end = Math.min(start + 2, combinedList.size());
+
+        PageImpl<PostDetailsResponseDTO> pagePosts = new PageImpl<>(combinedList.subList(start, end), pageable, combinedList.size());
+        return PaginatedResponseDTO.<PostDetailsResponseDTO>builder()
+                .data(pagePosts.getContent())
+                .totalPages(pagePosts.getTotalPages())
+                .totalItems(pagePosts.getTotalElements())
+                .currentPage(pagePosts.getNumber())
+                .build();
     }
 }
