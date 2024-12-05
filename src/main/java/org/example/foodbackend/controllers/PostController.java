@@ -98,4 +98,9 @@ public class PostController extends BaseController<Post, Long, PostService> {
     public PaginatedResponseDTO<PostDetailsResponseDTO> getOtherChefTopRecommend(@AuthenticationPrincipal Account user, @RequestParam EDaySession session) {
         return service.getTopRecommendPosts(user, session);
     }
+
+    @GetMapping("/recommend-for-you")
+    public PostDetailsResponseDTO getBestDish(@AuthenticationPrincipal Account user, @RequestParam EDaySession session) {
+        return service.getBestDish(user, session);
+    }
 }

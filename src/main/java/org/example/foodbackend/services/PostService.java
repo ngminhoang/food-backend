@@ -526,4 +526,33 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 .currentPage(pagePosts.getNumber())
                 .build();
     }
+
+    public PostDetailsResponseDTO getBestDish(Account user, EDaySession daySession) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
+        List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
+        List<PostDetailsResponseDTO> resultRec = convertToPostDetailDTOList(
+                userFound,
+                rootRepository.getBestDish(
+                        userFound.getId(),
+                        toolIds,
+                        spiceIds,
+                        userFound.getLanguage(),
+                        daySession,
+                        LocalDateTime.now().minusDays(7)
+                ));
+        List<PostDetailsResponseDTO> resultFallback = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(
+                userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(3)));
+
+        Set<PostDetailsResponseDTO> combined = new LinkedHashSet<>(resultRec);
+        combined.addAll(resultMostLike);
+
+        List<PostDetailsResponseDTO> combinedList = new ArrayList<>(combined);
+        int start = 0;
+        int end = 1;
+
+        PageImpl<PostDetailsResponseDTO> pagePosts = new PageImpl<>(combinedList.subList(start, end), pageable, combinedList.size());
+
+    }
 }
