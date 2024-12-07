@@ -36,7 +36,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(x -> x
-                        .requestMatchers("/api/login", "/api/register", "/swagger-ui/**", "/swagger", "/api-docs/**")
+                        .requestMatchers("/api/login", "/api/login/google","/api/register", "/swagger-ui/**", "/swagger", "/api-docs/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())

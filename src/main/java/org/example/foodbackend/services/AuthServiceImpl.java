@@ -1,7 +1,13 @@
 package org.example.foodbackend.services;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import org.example.foodbackend.authentication.AuthenticationRequest;
 import org.example.foodbackend.authentication.AuthenticationResponse;
+import org.example.foodbackend.authentication.GoogleAuthDTO;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.configuration.JwtService;
 import org.example.foodbackend.entities.Account;
@@ -16,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +64,45 @@ public class AuthServiceImpl implements AuthService {
         accountRepository.save(user);
         String jwt = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwt).build();
+    }
+
+    @Override
+    public ResponseEntity<AuthenticationResponse> loginGoogle(GoogleAuthDTO request) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    GsonFactory.getDefaultInstance())
+                    .setAudience(Collections.singletonList("681928462243-9f8ssm2n368m0qn70e4dgfn43pnivshr.apps.googleusercontent.com"))
+                    .build();
+            String token = request.getIdToken();
+            GoogleIdToken idToken = verifier.verify(token);
+            if (idToken != null) {
+                Payload payload = idToken.getPayload();
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+                String pictureUrl = (String) payload.get("picture");
+                Optional<Account> accountOptional = accountRepository.findByMail(email);
+                if (accountOptional.isPresent()) {
+                    Account user = accountOptional.get();
+                    return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtService.generateToken(user)).build());
+                } else {
+                    String encryptedPassword = passwordEncoder.encode((String) payload.get("sub"));
+                    Account newUser = Account.builder()
+                            .name(name)
+                            .avatar_url(pictureUrl)
+                            .mail(email)
+                            .password(encryptedPassword)
+                            .role(Erole.ROLE_USER)
+                            .language(ELanguage.vi)
+                            .build();
+                    accountRepository.save(newUser);
+                    return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtService.generateToken(newUser)).build());
+                }
+            }
+            return ResponseEntity.ok(AuthenticationResponse.builder().token(token).build());
+        } catch (GeneralSecurityException | IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     public List<KitchenTool> getUserInfo(Long userId) {

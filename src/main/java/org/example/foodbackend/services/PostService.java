@@ -529,7 +529,6 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
 
     public PostDetailsResponseDTO getBestDish(Account user, EDaySession daySession) {
         Account userFound = accountRepository.findById(user.getId()).get();
-        Pageable pageable = PageRequest.of(0, 2);
         List<Long> toolIds = userFound.getTools().stream().map(KitchenTool::getId).toList();
         List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
         List<PostDetailsResponseDTO> resultRec = convertToPostDetailDTOList(
@@ -542,17 +541,65 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                         daySession,
                         LocalDateTime.now().minusDays(7)
                 ));
-        List<PostDetailsResponseDTO> resultFallback = convertToPostDetailDTOList(userFound, rootRepository.getListPostByLikesDesc(
-                userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(3)));
+        List<PostDetailsResponseDTO> resultFallback = convertToPostDetailDTOList(userFound, rootRepository.getBestDishFallback(
+                userFound.getId(), userFound.getLanguage(), daySession, LocalDateTime.now().minusDays(7)));
+        List<PostDetailsResponseDTO> combinedList = Stream.concat(resultRec.stream(), resultFallback.stream()).toList();
+        Random random = new Random();
+        int randomIndex = random.nextInt(combinedList.size());
+        if (resultRec.size() > 0) {
+            return resultRec.get(randomIndex);
+        }
+        return combinedList.get(randomIndex);
+    }
 
-        Set<PostDetailsResponseDTO> combined = new LinkedHashSet<>(resultRec);
-        combined.addAll(resultMostLike);
-
-        List<PostDetailsResponseDTO> combinedList = new ArrayList<>(combined);
-        int start = 0;
-        int end = 1;
-
-        PageImpl<PostDetailsResponseDTO> pagePosts = new PageImpl<>(combinedList.subList(start, end), pageable, combinedList.size());
-
+    public PaginatedResponseDTO<PostDetailsResponseDTO> searchPost(
+            Account user,
+            String dishName,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Boolean isStandard,
+            String sortField,
+            String sortDirection,
+            int page,
+            int size
+    ) {
+        Account userFound = accountRepository.findById(user.getId()).get();
+        Pageable pageable = PageRequest.of(page, size);
+        String queryName = (dishName == null || dishName.trim().isEmpty()) ? "" : dishName;
+        Page<Post> posts;
+        if (sortField.equals("likes")) {
+            if (sortDirection.equals("asc")) {
+                posts = rootRepository.searchRecipesSortByLikesASC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            } else {
+                posts = rootRepository.searchRecipesSortByLikesDESC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            }
+        } else {
+            if (sortDirection.equals("asc")) {
+                posts = rootRepository.searchRecipesSortByPublishTimeASC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            } else {
+                posts = rootRepository.searchRecipesSortByPublishTimeDESC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            }
+        }
+        return convertToPostDetailDTO(userFound, posts);
     }
 }

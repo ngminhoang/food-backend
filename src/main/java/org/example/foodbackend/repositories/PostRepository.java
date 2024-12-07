@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -157,7 +158,85 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                   AND s.name = :session
                   AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
             """)
-    List<Post> getBestDishFallback(ELanguage lang,
+    List<Post> getBestDishFallback(Long userId,
+                                   ELanguage lang,
                                    EDaySession session,
                                    LocalDateTime timeLimit);
+    @Query("SELECT p FROM Post p " +
+            "LEFT JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "LEFT JOIN p.likedUsers lu " +
+            "WHERE" +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(p.is_standard = :isStandard) AND" +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY COUNT(lu) ASC")
+    Page<Post> searchRecipesSortByLikesASC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "LEFT JOIN p.likedUsers lu " +
+            "WHERE" +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "(p.is_standard = :isStandard) AND" +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY COUNT(lu) DESC")
+    Page<Post> searchRecipesSortByLikesDESC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "WHERE " +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "p.is_standard = :isStandard AND " +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY p.published_time ASC")
+    Page<Post> searchRecipesSortByPublishTimeASC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "WHERE " +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "p.is_standard = :isStandard AND " +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY p.published_time DESC")
+    Page<Post> searchRecipesSortByPublishTimeDESC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
 }

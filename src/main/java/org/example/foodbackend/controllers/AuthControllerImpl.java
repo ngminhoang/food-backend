@@ -2,6 +2,7 @@ package org.example.foodbackend.controllers;
 
 import org.example.foodbackend.authentication.AuthenticationRequest;
 import org.example.foodbackend.authentication.AuthenticationResponse;
+import org.example.foodbackend.authentication.GoogleAuthDTO;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.dto.UserInfoDTO;
@@ -35,6 +36,11 @@ public class AuthControllerImpl implements AuthController {
             return ResponseEntity.badRequest().body(null);
         }
         return ResponseEntity.ok(res);
+    }
+
+    @Override
+    public ResponseEntity<AuthenticationResponse> loginGoogle(GoogleAuthDTO request) {
+        return authService.loginGoogle(request);
     }
 
     @Override

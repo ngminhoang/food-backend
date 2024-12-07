@@ -2,6 +2,7 @@ package org.example.foodbackend.services;
 
 import org.example.foodbackend.authentication.AuthenticationRequest;
 import org.example.foodbackend.authentication.AuthenticationResponse;
+import org.example.foodbackend.authentication.GoogleAuthDTO;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.entities.KitchenTool;
 import org.example.foodbackend.entities.dto.UserInfoDTO;
@@ -14,6 +15,8 @@ public interface AuthService {
     AuthenticationResponse login(AuthenticationRequest request);
 
     AuthenticationResponse register(Register request);
+
+    ResponseEntity<AuthenticationResponse> loginGoogle(GoogleAuthDTO request);
 
     List<KitchenTool> getUserInfo(Long userId);
     ResponseEntity<UserInfoDTO> updateUserInfo(Long userId, UserInfoDTO userInfoDTO);

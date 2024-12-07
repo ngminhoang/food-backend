@@ -103,4 +103,19 @@ public class PostController extends BaseController<Post, Long, PostService> {
     public PostDetailsResponseDTO getBestDish(@AuthenticationPrincipal Account user, @RequestParam EDaySession session) {
         return service.getBestDish(user, session);
     }
+
+    @GetMapping("/list/search")
+    public PaginatedResponseDTO<PostDetailsResponseDTO> searchPost(
+            @AuthenticationPrincipal Account user,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) List<Long> sessionIds,
+            @RequestParam(required = false) List<Long> ingredientIds,
+            @RequestParam Boolean isStandard,
+            @RequestParam String sortBy,
+            @RequestParam String sortDir,
+            @RequestParam int page,
+            @RequestParam int size
+    ) {
+        return service.searchPost(user, name, sessionIds, ingredientIds, isStandard, sortBy, sortDir, page, size);
+    }
 }

@@ -2,6 +2,7 @@ package org.example.foodbackend.controllers;
 
 import org.example.foodbackend.authentication.AuthenticationRequest;
 import org.example.foodbackend.authentication.AuthenticationResponse;
+import org.example.foodbackend.authentication.GoogleAuthDTO;
 import org.example.foodbackend.authentication.Register;
 import org.example.foodbackend.entities.Account;
 import org.example.foodbackend.entities.dto.UserInfoDTO;
@@ -23,6 +24,11 @@ public interface AuthController {
     @PostMapping("/register")
     ResponseEntity<AuthenticationResponse> register(
             @RequestBody Register request
+    );
+
+    @PostMapping("/login/google")
+    ResponseEntity<AuthenticationResponse> loginGoogle(
+            @RequestBody GoogleAuthDTO request
     );
 
     @GetMapping("/user/info")
