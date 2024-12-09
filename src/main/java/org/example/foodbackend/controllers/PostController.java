@@ -118,4 +118,9 @@ public class PostController extends BaseController<Post, Long, PostService> {
     ) {
         return service.searchPost(user, name, sessionIds, ingredientIds, isStandard, sortBy, sortDir, page, size);
     }
+
+    @GetMapping("details/{id}")
+    public ResponseEntity<PostDetailAIDTO> getPostDetails(@AuthenticationPrincipal Account user, @PathVariable Long id) {
+        return service.getPostDetail(user, id);
+    }
 }

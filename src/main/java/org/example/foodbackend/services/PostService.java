@@ -602,4 +602,86 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         }
         return convertToPostDetailDTO(userFound, posts);
     }
+
+    public ResponseEntity<PostDetailAIDTO> getPostDetail(Account user, Long postId) {
+        try {
+            Account userFound = accountRepository.findById(user.getId()).get();
+            Post post = rootRepository.findById(postId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            List<Long> userToolIds = user.getTools().stream().map(item -> item.getId()).toList();
+            List<Long> userSpiceIds = user.getSpices().stream().map(item -> item.getId()).toList();
+            List<UserIngredient> userIngredients = userIngredientRepository.findByUser(userFound);
+            List<KitchenIngredientRequestDTO> userIngredientsChecking = userIngredients.stream().map(item -> {
+                KitchenIngredient ingredient = item.getIngredient();
+                return KitchenIngredientRequestDTO.builder()
+                        .id(ingredient.getId())
+                        .quantity(item.getQuantity())
+                        .build();
+            }).toList();
+            UserInfoDTO userInfoDTO = UserInfoDTO.builder()
+                    .id(post.getUser().getId())
+                    .mail(post.getUser().getMail())
+                    .name(post.getUser().getName())
+                    .avatar_url(post.getUser().getAvatar_url())
+                    .language(post.getUser().getLanguage())
+                    .build();
+            //likes
+            int likes = post.getLikedUsers().size();
+            boolean isLiked = post.getLikedUsers().contains(user);
+            //check tool
+            List<ToolCheckDTO> toolCheckDTOS = post.getTools().stream().map(tool -> ToolCheckDTO.builder()
+                    .isAvailable(userToolIds.contains(tool.getId()))
+                    .id(tool.getId())
+                    .name_en(tool.getName_en())
+                    .name_vi(tool.getName_vi())
+                    .img_url(tool.getImg_url())
+                    .build()).toList();
+            //check spice
+            List<SpiceCheckDTO> spiceCheckDTOS = post.getSpices().stream().map(spice ->
+                    SpiceCheckDTO.builder()
+                            .id(spice.getId())
+                            .name_en(spice.getName_en())
+                            .name_vi(spice.getName_vi())
+                            .img_url(spice.getImg_url())
+                            .isAvailable(userSpiceIds.contains(spice.getId())).build()).toList();
+            //get list ingredients for post
+            List<PostIngredient> postIngredients = post.getPost_ingredients();
+            List<IngredientCheckDTO> ingredientPostDTOS = postIngredients.stream().map(postIngredient -> {
+                KitchenIngredient ingredient = postIngredient.getIngredient();
+
+                //to do: check issue this line
+                boolean isAvailable = userIngredientsChecking.stream()
+                        .anyMatch(item -> item.getId().equals(ingredient.getId())
+                                          && item.getQuantity() >= postIngredient.getQuantity());
+                return IngredientCheckDTO.builder()
+                        .id(ingredient.getId())
+                        .name_en(ingredient.getName_en())
+                        .name_vi(ingredient.getName_vi())
+                        .unit(ingredient.getUnit())
+                        .img_url(ingredient.getImg_url())
+                        .quantity(postIngredient.getQuantity())
+                        .isAvailable(isAvailable)
+                        .build();
+            }).toList();
+            //return result
+            return ResponseEntity.ok(PostDetailAIDTO.builder()
+                    .id(post.getId())
+                    .dish_name(post.getDish_name())
+                    .dish_img_url(post.getDish_img_url())
+                    .description(post.getDescription())
+                    .duration(post.getDuration())
+                    .language(post.getLanguage())
+                    .published_time(post.getPublished_time())
+                    .user(userInfoDTO)
+                    .tools(toolCheckDTOS)
+                    .spices(spiceCheckDTOS)
+                    .ingredients(ingredientPostDTOS)
+                    .likes(likes)
+                    .is_liked(isLiked)
+                    .is_standard(post.is_standard())
+                    .steps(post.getSteps().size())
+                    .build());
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
