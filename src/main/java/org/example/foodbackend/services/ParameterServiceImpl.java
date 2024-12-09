@@ -20,9 +20,6 @@ public class ParameterServiceImpl extends BaseServiceImpl<Parameter, Long, Param
     }
 
     @Autowired
-    MeilisearchRepository meilisearchRepository;
-
-    @Autowired
     PythonAPI pythonAPI;
 
     @Override

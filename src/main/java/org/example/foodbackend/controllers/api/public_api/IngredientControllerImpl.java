@@ -19,7 +19,7 @@ public class IngredientControllerImpl implements IngredientController {
     }
 
     @Override
-    public ResponseEntity<List<IngredientResponseDTO>> search(String keyword, int page, int size, String sort, String order) {
+    public ResponseEntity<List<IngredientResponseDTO>> searchIngredients(String keyword, int page, int size, String sort, String order) {
         return ResponseEntity.ok(service.search(keyword, page, size, sort, order).getBody().stream().map(IngredientResponseDTO::new).toList());
     }
 

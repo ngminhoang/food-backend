@@ -31,13 +31,13 @@ public abstract class BaseServiceImpl<T, ID, R extends JpaRepository<T, ID>>{
         return result.orElse(null);
     }
 
-    public ResponseEntity<List<T>> findAll() {
+    public List<T> findAll() {
         try{
-            return ResponseEntity.ok(rootRepository.findAll());
+            return rootRepository.findAll();
         }
         catch(Exception e){
             e.printStackTrace();
-            return ResponseEntity.noContent().build();
+            return null;
         }
     }
 

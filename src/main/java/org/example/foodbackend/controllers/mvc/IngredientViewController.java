@@ -60,7 +60,7 @@ public class IngredientViewController {
     @GetMapping("/ingredient-form")
     public String showIngredientForm(@RequestParam(value = "id", required = false) Long id, Model model) {
         Ingredient ingredient = id != null ? ingredientService.findById(id) : new Ingredient();
-        List<Category> categories = categoryService.findAll().getBody();
+        List<Category> categories = categoryService.findAll();
         model.addAttribute("ingredient", ingredient);
         model.addAttribute("categories", categories);
         return "ingredient-form";
@@ -104,7 +104,7 @@ public class IngredientViewController {
 
     @PostMapping("/init")
     public String saveIngredient(@ModelAttribute("ingredient") Ingredient ingredient, RedirectAttributes redirectAttributes) {
-        ingredientService.save(ingredient);
+        ingredient = ingredientService.save(ingredient);
 
         // Redirect with the ID of the newly saved ingredient
         return "redirect:/ingredient-form?id=" + ingredient.getId();

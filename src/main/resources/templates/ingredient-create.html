@@ -104,25 +104,25 @@
     <input type="number" id="nuGrams" name="nuGrams" placeholder="Enter grams" step="0.01" required>
 
     <label for="nuCalories">Calories:</label>
-    <input type="number" id="nuCalories" name="nuCalories" placeholder="Enter calories" step="0.01">
+    <input type="number" id="nuCalories" name="nuCalories" placeholder="Enter calories" step="0.01" required>
 
     <label for="nuProteins">Proteins:</label>
-    <input type="number" id="nuProteins" name="nuProteins" placeholder="Enter proteins" step="0.01">
+    <input type="number" id="nuProteins" name="nuProteins" placeholder="Enter proteins" step="0.01" required>
 
     <label for="nuCarbs">Carbs:</label>
-    <input type="number" id="nuCarbs" name="nuCarbs" placeholder="Enter carbs" step="0.01">
+    <input type="number" id="nuCarbs" name="nuCarbs" placeholder="Enter carbs" step="0.01" required>
 
     <label for="nuFibers">Fibers:</label>
-    <input type="number" id="nuFibers" name="nuFibers" placeholder="Enter fibers" step="0.01">
+    <input type="number" id="nuFibers" name="nuFibers" placeholder="Enter fibers" step="0.01" required>
 
     <label for="nuFats">Fats:</label>
-    <input type="number" id="nuFats" name="nuFats" placeholder="Enter fats" step="0.01">
+    <input type="number" id="nuFats" name="nuFats" placeholder="Enter fats" step="0.01" required>
 
     <label for="nuSatFats">SatFats:</label>
-    <input type="number" id="nuSatFats" name="nuSatFats" placeholder="Enter saturated fats" step="0.01">
+    <input type="number" id="nuSatFats" name="nuSatFats" placeholder="Enter saturated fats" step="0.01" required>
 
     <label for="nuPrice">Price:</label>
-    <input type="number" id="nuPrice" name="nuPrice" placeholder="Enter price" step="0.01">
+    <input type="number" id="nuPrice" name="nuPrice" placeholder="Enter price" step="0.01" required>
 
     <button type="submit">Save Info</button>
 </form>
@@ -132,6 +132,24 @@
         event.preventDefault(); // Prevent default form submission
 
         const form = event.target;
+        const inputs = form.querySelectorAll('input[required]');
+
+        let allValid = true;
+
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.style.borderColor = 'red';
+                allValid = false;
+            } else {
+                input.style.borderColor = '';
+            }
+        });
+
+        if (!allValid) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
         const action = form.getAttribute('action');
         const formData = new FormData(form);
 

@@ -29,7 +29,7 @@ public abstract class BaseAdminController<T, ID, S extends BaseService<T, ID>, R
 
     @GetMapping
     public ResponseEntity<List<RS>> findAll() {
-        List<RS> responses = service.findAll().getBody()
+        List<RS> responses = service.findAll()
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());

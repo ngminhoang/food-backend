@@ -14,7 +14,7 @@ public interface IngredientController {
     ResponseEntity<List<IngredientResponseDTO>> getList();
 
     @GetMapping("/search")
-    ResponseEntity<List<IngredientResponseDTO>> search(@RequestParam String keyword, @RequestParam int page, @RequestParam int size, @RequestParam String sort, @RequestParam String order);
+    ResponseEntity<List<IngredientResponseDTO>> searchIngredients(@RequestParam String keyword, @RequestParam int page, @RequestParam int size, @RequestParam String sort, @RequestParam String order);
     @GetMapping("/suggest")
     ResponseEntity<List<String>> suggest(@RequestParam String keyword);
 }
