@@ -607,8 +607,8 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         try {
             Account userFound = accountRepository.findById(user.getId()).get();
             Post post = rootRepository.findById(postId).orElseThrow(ChangeSetPersister.NotFoundException::new);
-            List<Long> userToolIds = user.getTools().stream().map(item -> item.getId()).toList();
-            List<Long> userSpiceIds = user.getSpices().stream().map(item -> item.getId()).toList();
+            List<Long> userToolIds = userFound.getTools().stream().map(item -> item.getId()).toList();
+            List<Long> userSpiceIds = userFound.getSpices().stream().map(item -> item.getId()).toList();
             List<UserIngredient> userIngredients = userIngredientRepository.findByUser(userFound);
             List<KitchenIngredientRequestDTO> userIngredientsChecking = userIngredients.stream().map(item -> {
                 KitchenIngredient ingredient = item.getIngredient();
@@ -626,7 +626,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                     .build();
             //likes
             int likes = post.getLikedUsers().size();
-            boolean isLiked = post.getLikedUsers().contains(user);
+            boolean isLiked = post.getLikedUsers().contains(userFound);
             //check tool
             List<ToolCheckDTO> toolCheckDTOS = post.getTools().stream().map(tool -> ToolCheckDTO.builder()
                     .isAvailable(userToolIds.contains(tool.getId()))
@@ -647,8 +647,6 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
             List<PostIngredient> postIngredients = post.getPost_ingredients();
             List<IngredientCheckDTO> ingredientPostDTOS = postIngredients.stream().map(postIngredient -> {
                 KitchenIngredient ingredient = postIngredient.getIngredient();
-
-                //to do: check issue this line
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
                                           && item.getQuantity() >= postIngredient.getQuantity());

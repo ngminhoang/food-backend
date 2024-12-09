@@ -110,6 +110,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             LEFT JOIN p.likedUsers lu
             LEFT JOIN p.histories h
             WHERE p.language = :lang
+            AND p.is_standard = false
             AND s.name =:session
             AND p.user.id != :userId
             AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
