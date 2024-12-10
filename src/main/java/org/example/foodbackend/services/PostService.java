@@ -546,8 +546,9 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         List<PostDetailsResponseDTO> combinedList = Stream.concat(resultRec.stream(), resultFallback.stream()).toList();
         Random random = new Random();
         int randomIndex = random.nextInt(combinedList.size());
-        if (resultRec.size() > 0) {
-            return resultRec.get(randomIndex);
+        if (!resultRec.isEmpty()) {
+            int randomIndexBest = random.nextInt(resultRec.size());
+            return resultRec.get(randomIndexBest);
         }
         return combinedList.get(randomIndex);
     }
