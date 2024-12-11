@@ -21,4 +21,5 @@ public interface AuthService {
     List<KitchenTool> getUserInfo(Long userId);
     ResponseEntity<UserInfoDTO> updateUserInfo(Long userId, UserInfoDTO userInfoDTO);
     ResponseEntity<?> updateUserLanguage(Long userId, ELanguage language);
+    ResponseEntity<?> updateUserSlots(Long userId, int slots);
 }

@@ -240,4 +240,42 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             List<Long> ingredientIds,
             Pageable pageable
     );
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "WHERE " +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "p.is_standard = :isStandard AND " +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY p.duration ASC")
+    Page<Post> searchRecipesSortByDurationASC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.daySessions s " +
+            "LEFT JOIN p.post_ingredients pi " +
+            "LEFT JOIN pi.ingredient i " +
+            "WHERE " +
+            "(LOWER(p.dish_name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+            "p.is_standard = :isStandard AND " +
+            "(:sessionIds IS NULL OR s.id IN :sessionIds) AND " +
+            "(:ingredientIds IS NULL OR i.id IN :ingredientIds)" +
+            "GROUP BY p.id " +
+            "ORDER BY p.duration DESC")
+    Page<Post> searchRecipesSortByDurationDESC(
+            String name,
+            Boolean isStandard,
+            List<Long> sessionIds,
+            List<Long> ingredientIds,
+            Pageable pageable
+    );
 }

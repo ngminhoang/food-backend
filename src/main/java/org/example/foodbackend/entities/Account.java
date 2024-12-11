@@ -54,6 +54,8 @@ public class Account implements UserDetails {
     @ManyToMany(mappedBy = "likedUsers")
     @JsonIgnore
     private List<Post> likedPosts;
+    @Column
+    private int slots;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

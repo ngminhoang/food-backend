@@ -584,6 +584,22 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                         ingredientIds,
                         pageable);
             }
+        } else if (sortField.equals("duration")) {
+            if (sortDirection.equals("asc")) {
+                posts = rootRepository.searchRecipesSortByDurationASC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            } else {
+                posts = rootRepository.searchRecipesSortByDurationDESC(
+                        queryName,
+                        isStandard,
+                        sessionIds,
+                        ingredientIds,
+                        pageable);
+            }
         } else {
             if (sortDirection.equals("asc")) {
                 posts = rootRepository.searchRecipesSortByPublishTimeASC(

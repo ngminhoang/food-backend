@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
                 .password(encryptedPassword)
                 .role(Erole.ROLE_USER)
                 .language(ELanguage.vi)
+                .slots(1)
                 .build();
         accountRepository.save(user);
         String jwt = jwtService.generateToken(user);
@@ -94,6 +95,7 @@ public class AuthServiceImpl implements AuthService {
                             .password(encryptedPassword)
                             .role(Erole.ROLE_USER)
                             .language(ELanguage.vi)
+                            .slots(1)
                             .build();
                     accountRepository.save(newUser);
                     return ResponseEntity.ok(AuthenticationResponse.builder().token(jwtService.generateToken(newUser)).build());
@@ -129,6 +131,18 @@ public class AuthServiceImpl implements AuthService {
         try {
             Account account = accountRepository.findById(userId).orElseThrow(ChangeSetPersister.NotFoundException::new);
             account.setLanguage(language);
+            accountRepository.save(account);
+            return ResponseEntity.ok().build();
+        } catch (ChangeSetPersister.NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> updateUserSlots(Long userId, int slots) {
+        try {
+            Account account = accountRepository.findById(userId).orElseThrow(ChangeSetPersister.NotFoundException::new);
+            account.setSlots(slots);
             accountRepository.save(account);
             return ResponseEntity.ok().build();
         } catch (ChangeSetPersister.NotFoundException e) {
