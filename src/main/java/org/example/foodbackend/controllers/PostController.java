@@ -116,7 +116,7 @@ public class PostController extends BaseController<Post, Long, PostService> {
             @RequestParam int page,
             @RequestParam int size
     ) {
-        return service.searchPost(user, name, sessionIds, ingredientIds, isStandard, sortBy, sortDir.toLowerCase(), page, size);
+        return service.searchPost(user, name, sessionIds.isEmpty() ? null : sessionIds, ingredientIds.isEmpty() ? null : ingredientIds, isStandard, sortBy, sortDir.toLowerCase(), page, size);
     }
 
     @GetMapping("details/{id}")
