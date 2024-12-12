@@ -1,0 +1,13 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: meilisearch
+    environment:
+      MEILI_MASTER_KEY: "your_meilisearch_master_key"  # Set a master key for authentication (optional)
+    ports:
+      - "7800:7700"  # Expose Meilisearch on port 7700
+    volumes:
+      - meili_data:/meili_data  # Persistent storage for Meilisearch data
+
+volumes:
+  meili_data:
