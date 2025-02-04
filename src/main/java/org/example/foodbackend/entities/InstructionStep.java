@@ -21,7 +21,7 @@ public class InstructionStep {
     private int step;
     @Column
     private String title;
-    @Column
+    @Column(length = 500)
     private String description;
     @Column
     private Integer duration;

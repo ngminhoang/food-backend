@@ -70,5 +70,4 @@ public class AuthControllerImpl implements AuthController {
     public ResponseEntity<?> updateUserSlots(Account account, UserSlotDTO userSlotDTO) {
         return authService.updateUserSlots(account.getId(), userSlotDTO.getSlots());
     }
-
 }

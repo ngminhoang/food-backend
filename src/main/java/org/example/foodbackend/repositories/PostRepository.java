@@ -51,7 +51,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                      JOIN pi.ingredient i
                      LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId 
                      WHERE pi.post.id = p.id
-                     AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0)) 
+                     AND (ui.ingredient IS NULL OR (pi.quantity * :slots) > COALESCE(ui.quantity, 0)) 
                 )
                 AND p.is_standard = true
                 AND p.language = :lang
@@ -59,6 +59,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             """)
     Page<Post> getPostsByKitchen(
             Long userId,
+            int slots,
             List<Long> toolIds,
             List<Long> spiceIds,
             ELanguage lang,
@@ -86,7 +87,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                        JOIN pi.ingredient i
                        LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId
                        WHERE pi.post.id = p.id
-                       AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0))
+                       AND (ui.ingredient IS NULL OR (pi.quantity * :slots) > COALESCE(ui.quantity, 0))
                   )
                   AND p.is_standard = false
                   AND p.language = :lang
@@ -98,6 +99,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             """)
     List<Post> getRecommendedPosts(
             Long userId,
+            int slots,
             List<Long> toolIds,
             List<Long> spiceIds,
             ELanguage lang,
@@ -137,7 +139,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                        JOIN pi.ingredient i
                        LEFT JOIN UserIngredient ui ON ui.ingredient.id = i.id AND ui.user.id = :userId
                        WHERE pi.post.id = p.id
-                       AND (ui.ingredient IS NULL OR pi.quantity > COALESCE(ui.quantity, 0))
+                       AND (ui.ingredient IS NULL OR (pi.quantity * :slots) > COALESCE(ui.quantity, 0))
                   )
                   AND p.is_standard = true
                   AND p.language = :lang
@@ -145,6 +147,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                   AND ((h.cookedTime < :timeLimit AND h.user.id = :userId) OR h.cookedTime IS NULL)
             """)
     List<Post> getBestDish(Long userId,
+                           int slots,
                            List<Long> toolIds,
                            List<Long> spiceIds,
                            ELanguage lang,

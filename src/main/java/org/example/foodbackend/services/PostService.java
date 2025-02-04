@@ -153,14 +153,14 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 //to do: check issue this line
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                          && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity() * user.getSlots());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
                         .name_vi(ingredient.getName_vi())
                         .unit(ingredient.getUnit())
                         .img_url(ingredient.getImg_url())
-                        .quantity(postIngredient.getQuantity())
+                        .quantity(postIngredient.getQuantity() * user.getSlots())
                         .isAvailable(isAvailable)
                         .build();
             }).toList();
@@ -243,14 +243,14 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 //to do: check issue this line
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                          && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity() * user.getSlots());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
                         .name_vi(ingredient.getName_vi())
                         .unit(ingredient.getUnit())
                         .img_url(ingredient.getImg_url())
-                        .quantity(postIngredient.getQuantity())
+                        .quantity(postIngredient.getQuantity() * user.getSlots())
                         .isAvailable(isAvailable)
                         .build();
             }).toList();
@@ -284,6 +284,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 userFound,
                 rootRepository.getRecommendedPosts(
                         userFound.getId(),
+                        userFound.getSlots(),
                         toolIds,
                         spiceIds,
                         userFound.getLanguage(),
@@ -349,6 +350,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         List<Long> spiceIds = userFound.getSpices().stream().map(KitchenSpice::getId).toList();
         return convertToPostDetailDTO(userFound, rootRepository.getPostsByKitchen(
                 user.getId(),
+                userFound.getSlots(),
                 toolIds,
                 spiceIds,
                 user.getLanguage(),
@@ -365,7 +367,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
         }
     }
 
-    public ResponseEntity<?> cookPost(Account user, Long postId, int quantity) {
+    public ResponseEntity<?> cookPost(Account user, Long postId) {
         try {
             Account userFound = accountRepository.findById(user.getId()).get();
             Post post = rootRepository.findById(postId).orElseThrow(ChangeSetPersister.NotFoundException::new);
@@ -377,7 +379,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                                 postIngredient.getIngredient().getId());
                 if (userIngredient.isPresent()) {
                     UserIngredient userIngredientFound = userIngredient.get();
-                    int newQuantity = userIngredientFound.getQuantity() - postIngredient.getQuantity() * quantity;
+                    int newQuantity = userIngredientFound.getQuantity() - postIngredient.getQuantity() * userFound.getSlots();
                     userIngredientFound.setQuantity(Math.max(newQuantity, 0));
                     userIngredientRepository.save(userIngredientFound);
                 }
@@ -438,14 +440,14 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
 
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                          && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity() * user.getSlots());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
                         .name_vi(ingredient.getName_vi())
                         .unit(ingredient.getUnit())
                         .img_url(ingredient.getImg_url())
-                        .quantity(postIngredient.getQuantity())
+                        .quantity(postIngredient.getQuantity() * user.getSlots())
                         .isAvailable(isAvailable)
                         .build();
             }).toList();
@@ -503,6 +505,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 userFound,
                 rootRepository.getRecommendedPosts(
                         userFound.getId(),
+                        userFound.getSlots(),
                         toolIds,
                         spiceIds,
                         userFound.getLanguage(),
@@ -535,6 +538,7 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 userFound,
                 rootRepository.getBestDish(
                         userFound.getId(),
+                        userFound.getSlots(),
                         toolIds,
                         spiceIds,
                         userFound.getLanguage(),
@@ -666,14 +670,14 @@ public class PostService extends BaseServiceImpl<Post, Long, PostRepository> imp
                 KitchenIngredient ingredient = postIngredient.getIngredient();
                 boolean isAvailable = userIngredientsChecking.stream()
                         .anyMatch(item -> item.getId().equals(ingredient.getId())
-                                          && item.getQuantity() >= postIngredient.getQuantity());
+                                          && item.getQuantity() >= postIngredient.getQuantity() * user.getSlots());
                 return IngredientCheckDTO.builder()
                         .id(ingredient.getId())
                         .name_en(ingredient.getName_en())
                         .name_vi(ingredient.getName_vi())
                         .unit(ingredient.getUnit())
                         .img_url(ingredient.getImg_url())
-                        .quantity(postIngredient.getQuantity())
+                        .quantity(postIngredient.getQuantity() * user.getSlots())
                         .isAvailable(isAvailable)
                         .build();
             }).toList();

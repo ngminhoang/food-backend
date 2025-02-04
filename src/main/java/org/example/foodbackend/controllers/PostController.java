@@ -77,8 +77,8 @@ public class PostController extends BaseController<Post, Long, PostService> {
     }
 
     @PostMapping("{id}/cook")
-    public ResponseEntity<?> cookPost(@AuthenticationPrincipal Account user, @PathVariable Long id, @RequestParam int quantity) {
-        return service.cookPost(user, id, quantity);
+    public ResponseEntity<?> cookPost(@AuthenticationPrincipal Account user, @PathVariable Long id) {
+        return service.cookPost(user, id);
     }
 
     @GetMapping("/cook")
