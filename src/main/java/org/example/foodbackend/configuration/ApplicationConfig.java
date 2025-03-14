@@ -20,6 +20,8 @@ public class ApplicationConfig {
     @Autowired
     private AccountRepository repository;
 
+
+
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> repository.findByMail(username)
